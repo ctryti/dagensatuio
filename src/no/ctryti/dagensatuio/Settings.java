@@ -17,10 +17,10 @@ public abstract class Settings {
 		 * be parsed with the current parser
 		 */
 		/*
-		NIH ("Norges idrettshÃ¸gskoles kafe","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/nih"),
+		NIH ("Norges idrettshøgskoles kafe","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/nih"),
 		OLE ("Kafe Ole","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/kafe+ole"),
-		MHS ("MusikkhÃ¸gskolens kafe","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/musikkhogskolens+kafe+ny"),
-		NVH("Norges veterinÃ¦rhÃ¸gskole","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/veterinerhogskolen"),
+		MHS ("Musikkhøgskolens kafe","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/musikkhogskolens+kafe+ny"),
+		NVH("Norges veterinærhøgskole","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/veterinerhogskolen"),
 		 */
 		AHO        ("AHO-kafeen","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/aho"), 
 		FORSKNINGSV("Forskningsveien","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/forskningsveien"), 
