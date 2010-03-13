@@ -14,11 +14,7 @@ public class DatabaseAdapter {
 
 	private static final String DATABASE_NAME = "dagensatuio.db";
 	private static final String TAG = "DatabaseAdapter";
-	private DatabaseHelper mDbHelper;
-	private SQLiteDatabase mDb;
-	private Context mCtx;
-
-
+	
 	/* Database column names */
 	public static final String KEY_PLACE = "place";
 	public static final String KEY_DAY = "day";
@@ -29,6 +25,11 @@ public class DatabaseAdapter {
 	public static final String KEY_LAKTOSE = "has_laktose";
 	public static final String KEY_ROWID = "_id";
 
+	private DatabaseHelper mDbHelper;
+	private SQLiteDatabase mDb;
+	private Context mCtx;
+
+	
 	private static class DatabaseHelper extends SQLiteOpenHelper {
 
 		private static final String TAG = "DatabaseAdapter$DatabaseHelper";

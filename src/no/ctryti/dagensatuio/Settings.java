@@ -24,7 +24,7 @@ public abstract class Settings {
 		 */
 		AHO        ("AHO-kafeen","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/aho"), 
 		FORSKNINGSV("Forskningsveien","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/forskningsveien"), 
-		FREDERIKKE ("Frederikke kafÃ©","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/frederikke+kafe"), 
+		FREDERIKKE ("Frederikke kafé","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/frederikke+kafe"), 
 		IFI        ("Informatikkafeen","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/informatikkafeen+ny"), 
 		HELGA      ("Kafe Helga","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/kafe+helga"), 
 		NOVA       ("Kafe Nova","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/kafe+nova"), 

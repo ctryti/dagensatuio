@@ -24,11 +24,9 @@ public class RefreshDbTask extends AsyncTask<Void, Integer, Void>  {
 	private static final int DOWNLOADING = 2;
 	private static final int PARSING = 3;
 	
-	
 	public RefreshDbTask(Activity ctx) {
 		this.mCtx = ctx;
-		mDbAdapter = new DatabaseAdapter(ctx);
-		
+		mDbAdapter = new DatabaseAdapter(ctx).open();
 	}
 	
 	@Override
