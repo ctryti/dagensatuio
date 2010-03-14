@@ -6,6 +6,7 @@ public class DinnerItem {
 	private String  day;
 	private Type    type;
 	private String  description;
+	private String  period;
 	private boolean gluten;
 	private boolean laktose;
 	
@@ -13,11 +14,12 @@ public class DinnerItem {
 		DAGENS, VEGETAR, HALAL, MMM, SUPPE, OPTIMA;
 	}
 
-	public DinnerItem(String place, String day, Type type, String description, boolean gluten, boolean laktose) {
+	public DinnerItem(String place, String day, Type type, String description, String period, boolean gluten, boolean laktose) {
 		this.place = place;
 		this.day = day;
 		this.type = type;
 		this.description = description;
+		this.period = period;
 		this.gluten = gluten;
 		this.laktose = laktose;
 	}
@@ -68,5 +70,13 @@ public class DinnerItem {
 
 	public void setLaktose(boolean laktose) {
 		this.laktose = laktose;
+	}
+
+	public void setPeriod(String period) {
+		this.period = period;
+	}
+
+	public String getPeriod() {
+		return period;
 	}
 }

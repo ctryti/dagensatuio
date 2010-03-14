@@ -6,9 +6,15 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Scanner;
 
+import android.util.Log;
+
 public class SiOParser {
+	
+	private static final String TAG = "SiOParser";
+	
 	private static final String NEW_LINE_TOKEN = "§";
 	private static final String END_OF_MENU = "&&";
  
@@ -28,59 +34,6 @@ public class SiOParser {
 	private static String place;
 	private static String period;
 
-	public static void main(String[] args) {
-		InputStream file;
-		ArrayList<DinnerItem> items;
-		try {
-//			file = new FileInputStream(new File("./frederikke+kafe"));
-//			items = SiOParser.parse(file, "Frederikke kafé");
-//			for (DinnerItem dinnerItem : items) {
-//				System.out.print(dinnerItem.getPlace() + ": ");
-//				System.out.print(dinnerItem.getDay() + " - ");
-//				System.out.print(dinnerItem.getType() + " - ");
-//				System.out.println(dinnerItem.getDescription());
-//				
-//			}
-//			file = new FileInputStream(new File("./informatikkafeen+ny"));
-//			items = SiOParser.parse(file, "Informatikkafeen");
-//			for (DinnerItem dinnerItem : items) {
-//				System.out.print(dinnerItem.getPlace() + ": ");
-//				System.out.print(dinnerItem.getDay() + " - ");
-//				System.out.print(dinnerItem.getType() + " - ");
-//				System.out.println(dinnerItem.getDescription() + " - ");
-//				
-//			}
-			file = new FileInputStream(new File("./sv+kafeen+ny"));
-			items = SiOParser.parse(file, "SV Kafeen");
-			for (DinnerItem dinnerItem : items) {
-				System.out.print(dinnerItem.getPlace() + ": ");
-				System.out.print(dinnerItem.getDay() + " - ");
-				System.out.print(dinnerItem.getType() + " - ");
-				System.out.println(dinnerItem.getDescription() + " - ");
-				
-			}
-		} catch (FileNotFoundException e) {
-
-			e.printStackTrace();
-		}
-		
-	}
-		
-	public static String replaceAll(String source, String toReplace, String replacement) {
-		int idx = source.lastIndexOf( toReplace );
-		if ( idx != -1 ) {
-			StringBuffer ret = new StringBuffer( source );
-			ret.replace( idx, idx+toReplace.length(), replacement );
-			while( (idx=source.lastIndexOf(toReplace, idx-1)) != -1 ) {
-				ret.replace( idx, idx+toReplace.length(), replacement );
-			}
-			source = ret.toString();
-		}
-
-		return source;
-	}
-
-	
 	public static ArrayList<DinnerItem> parse(InputStream source, String place) {
 
 		ArrayList<DinnerItem> menuEntries = new ArrayList<DinnerItem>();
@@ -138,36 +91,31 @@ public class SiOParser {
 
 		/* remove any NEW_LINE_TOKENS that got into the period string */
 		period = period.replaceAll(NEW_LINE_TOKEN, "");
+		period = Calendar.getInstance().get(Calendar.YEAR) + " " + period;
+		/* compact multiple whitespaces into 1 space */
+		period = period.replaceAll("\\s+", " ");
+		Log.i(TAG, "Period: "+period);
+		
 		
 		/* The current token should now be "Mandag" */
 		for (int i = 0; i < 5; i++) {
 			/* Frederikke Kafe is a special case, with extra shit html */
 			if (place.equals("Frederikke kafé")) {
-				menuEntries.addAll(Arrays.asList(parseShittyFrederikkeHtml(i)));
+				menuEntries.addAll(Arrays.asList(parseFrederikke(i)));
 			} else if(place.equals("SV Kafeen")) {
-				menuEntries.addAll(Arrays.asList(parseShittySVHtml(i)));
+				menuEntries.addAll(Arrays.asList(parseSV(i)));
 			} else {
-				menuEntries.add(parseSingleDay(i));
+				menuEntries.add(parseNormal(i));
 			}
 		}
 		return menuEntries;
 	}
 
-	private static DinnerItem[] parseShittySVHtml(int num) {
+	private static DinnerItem[] parseSV(int num) {
 		DinnerItem[] items = new DinnerItem[3];
 
-		/***************************************/
-		
-//		while(sc.hasNext()) {
-//			System.out.println(sc.nextLine());
-//		}
-//		if(!sc.hasNext())
-//			return null;
-		
-		/****************************************/
-		
 		for (int i = 0; i < items.length; i++)
-			items[i] = new DinnerItem(place, days[num], null, null, false, false);
+			items[i] = new DinnerItem(place, days[num], null, null, period, false, false);
 
 		items[0].setType(DinnerItem.Type.DAGENS);
 		items[1].setType(DinnerItem.Type.VEGETAR);
@@ -190,8 +138,6 @@ public class SiOParser {
 		sc.useDelimiter(NEW_LINE_TOKEN);
 		items[0].setDescription(cleanUpString(sc.next()));
 
-		System.out.println(items[0].getDescription());
-		
 		sc.useDelimiter(" ");
 		while (!curToken.equals("Vegetar:") && !curToken.equals("Halal:"))
 			curToken = sc.next();
@@ -204,8 +150,7 @@ public class SiOParser {
 		sc.next();
 		sc.useDelimiter(NEW_LINE_TOKEN);
 		items[1].setDescription(cleanUpString(sc.next()));
-		System.out.println(items[1].getDescription());
-		
+				
 		sc.useDelimiter(" ");
 		while (!curToken.equals("Optima:"))
 			curToken = sc.next();
@@ -216,19 +161,18 @@ public class SiOParser {
 		sc.useDelimiter(NEW_LINE_TOKEN);
 	
 		items[2].setDescription(cleanUpString(sc.next()));
-		System.out.println(items[2].getDescription());
 		sc.useDelimiter(" ");
 
 		return items;
 	}
 	
-	private static DinnerItem[] parseShittyFrederikkeHtml(int num) {
+	private static DinnerItem[] parseFrederikke(int num) {
 		DinnerItem[] items = new DinnerItem[6];
 
 
 		
 		for (int i = 0; i < items.length; i++)
-			items[i] = new DinnerItem(place, days[num], null, null, false, false);
+			items[i] = new DinnerItem(place, days[num], null, null, period, false, false);
 
 		items[0].setType(DinnerItem.Type.DAGENS);
 		items[1].setType(DinnerItem.Type.VEGETAR);
@@ -275,8 +219,8 @@ public class SiOParser {
 		sc.useDelimiter(" ");
 		return items;
 	}
-
-	private static DinnerItem parseSingleDay(int num) {
+	
+	private static DinnerItem parseNormal(int num) {
 		String description = "";
 		boolean gluten = false, laktose = false;
 		while (sc.hasNext()) {
@@ -288,7 +232,7 @@ public class SiOParser {
 			}
 		}
 		description = cleanUpString(description.replaceAll(NEW_LINE_TOKEN + "\\s*", ""));
-		return new DinnerItem(place, days[num], DinnerItem.Type.DAGENS, description, gluten, laktose);
+		return new DinnerItem(place, days[num], DinnerItem.Type.DAGENS, description, period, gluten, laktose);
 	}
 
 	private static String cleanUpString(String s) {

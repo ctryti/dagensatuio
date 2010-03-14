@@ -21,6 +21,7 @@ public class DatabaseAdapter {
 	public static final String KEY_TYPE = "type";
 	public static final String KEY_DESC = "desc";
 	public static final String KEY_DISH = "dish";
+	public static final String KEY_PERIOD = "period";
 	public static final String KEY_GLUTEN = "has_gluten";
 	public static final String KEY_LAKTOSE = "has_laktose";
 	public static final String KEY_ROWID = "_id";
@@ -28,12 +29,11 @@ public class DatabaseAdapter {
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
 	private Context mCtx;
-
 	
 	private static class DatabaseHelper extends SQLiteOpenHelper {
 
 		private static final String TAG = "DatabaseAdapter$DatabaseHelper";
-		private static final int DATABASE_VERSION = 4;
+		private static final int DATABASE_VERSION = 5;
 
 		/* Create statements */
 		private static final String CREATE_TABLE_PLACES =
@@ -58,15 +58,15 @@ public class DatabaseAdapter {
 			"\t"+KEY_PLACE  + " integer not null, \n" +
 			"\t"+KEY_DAY    + " integer not null, \n" +
 			"\t"+KEY_TYPE   + " integer not null, \n" +
+			"\t"+KEY_PERIOD   + " integer not null, \n" +
 			"\t"+KEY_GLUTEN + " integer not null, \n" +
 			"\t"+KEY_LAKTOSE+ " integer not null, \n" +
 			"\tforeign key (" + KEY_PLACE + ") REFERENCES " + KEY_PLACE + ", \n" + //"(_id)," +
 			"\tforeign key (" + KEY_DAY   + ") REFERENCES " + KEY_DAY   + ", \n" + //"(_id)," +
 			"\tforeign key (" + KEY_TYPE  + ") REFERENCES " + KEY_TYPE  + ", \n" + //"(_id)," +
-			"\tunique (" + KEY_DESC + ", " + KEY_PLACE + ", " + KEY_DAY + ", \n" + KEY_TYPE + ")\n" +
+			"\tunique (" + KEY_DESC +", " + KEY_PERIOD + ", " + KEY_PLACE + ", " + KEY_DAY + ", \n" + KEY_TYPE + ")\n" +
 			");";
-
-
+	
 		public DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		}
@@ -86,8 +86,7 @@ public class DatabaseAdapter {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.w(TAG, "Upgrading database from version " + oldVersion + "to "
-					+ newVersion + ", which will destroy all old data");
+			Log.w(TAG, "Upgrading database from version " + oldVersion + "to " + newVersion + ", which will destroy all old data");
 			dropStatements(db);
 			onCreate(db);
 		}
@@ -142,6 +141,8 @@ public class DatabaseAdapter {
 			valid = false;
 		if(!values.containsKey(KEY_TYPE))
 			valid = false;
+		if(!values.containsKey(KEY_PERIOD))
+			valid = false;
 		if(!values.containsKey(KEY_GLUTEN))
 			valid = false;
 		if(!values.containsKey(KEY_LAKTOSE))
@@ -170,10 +171,14 @@ public class DatabaseAdapter {
 		cv.put(KEY_DESC, values.getAsString(KEY_DESC));
 		cv.put(KEY_GLUTEN, values.getAsInteger(KEY_GLUTEN));
 		cv.put(KEY_LAKTOSE, values.getAsInteger(KEY_LAKTOSE));
-		//if(values.getAsString(KEY_PLACE).equals("Frederikke kafé") && values.getAsString(KEY_TYPE).equals("Suppe"))
-		//	Log.i(TAG, values.getAsString(KEY_DESC));
-		
+		cv.put(KEY_PERIOD, values.getAsString(KEY_PERIOD));
+				
 		long rowId = mDb.insert(KEY_DISH, null, cv);
+		if(rowId == -1) 
+			Log.e(TAG, "Failed to insert: " + values.getAsString(KEY_PLACE)+", "+ values.getAsString(KEY_PERIOD)+ "," +values.getAsString(KEY_DAY) + ", " + values.getAsString(KEY_TYPE) + "," + values.getAsString(KEY_DESC));
+		else	
+			Log.i(TAG, "Insert: " + values.getAsString(KEY_PLACE)+", "+ values.getAsString(KEY_PERIOD)+ "," +values.getAsString(KEY_DAY) + ", " + values.getAsString(KEY_TYPE) + ", "+values.getAsString(KEY_DESC));
+		//Log.i(TAG, "Inserted "+values.getAsString(KEY_PLACE)+","+values.getAsString(KEY_DAY));
 		return rowId;
 	}
 
