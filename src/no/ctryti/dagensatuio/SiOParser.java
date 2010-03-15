@@ -115,7 +115,7 @@ public class SiOParser {
 		DinnerItem[] items = new DinnerItem[3];
 
 		for (int i = 0; i < items.length; i++)
-			items[i] = new DinnerItem(place, days[num], null, null, period, false, false);
+			items[i] = new DinnerItem(place, days[num], (DinnerItem.Type)null, null, period, false, false);
 
 		items[0].setType(DinnerItem.Type.DAGENS);
 		items[1].setType(DinnerItem.Type.VEGETAR);
@@ -172,7 +172,7 @@ public class SiOParser {
 
 		
 		for (int i = 0; i < items.length; i++)
-			items[i] = new DinnerItem(place, days[num], null, null, period, false, false);
+			items[i] = new DinnerItem(place, days[num], (DinnerItem.Type)null, null, period, false, false);
 
 		items[0].setType(DinnerItem.Type.DAGENS);
 		items[1].setType(DinnerItem.Type.VEGETAR);

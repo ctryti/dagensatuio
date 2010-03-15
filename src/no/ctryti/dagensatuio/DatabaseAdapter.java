@@ -1,13 +1,13 @@
 package no.ctryti.dagensatuio;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteQueryBuilder;
-import android.net.Uri;
 import android.util.Log;
 
 public class DatabaseAdapter {
@@ -196,5 +196,30 @@ public class DatabaseAdapter {
 		c.close();
 		return rowId;
 	}
+	
+	public ArrayList<DinnerItem> getAllFromPlace(String place) {
+		Cursor c = mDb.query(KEY_DISH, new String[] {KEY_ROWID, KEY_PLACE, KEY_DAY, KEY_PERIOD, KEY_TYPE, KEY_DESC }, KEY_PLACE+"='2'", null, null, null, null);
+			
+		ArrayList<DinnerItem> list = new ArrayList<DinnerItem>();
+		DinnerItem item;
+		
+		if(c.moveToFirst()) {
+			String desc, day, period, type;
+			
+			do {
+				desc = c.getString(c.getColumnIndex(KEY_DESC));
+				period = c.getString(c.getColumnIndex(KEY_PERIOD));
+				day = c.getString(c.getColumnIndex(KEY_DAY));
+				type = c.getString(c.getColumnIndex(KEY_TYPE));
+				
+				item = new DinnerItem(place, day, type, desc, period, false, false);
+				list.add(item);
+				
+			} while(c.moveToNext());
+		}
+		c.close();
+		return list;
+	}
+	
 
 }

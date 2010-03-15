@@ -14,6 +14,10 @@ public class DinnerItem {
 		DAGENS, VEGETAR, HALAL, MMM, SUPPE, OPTIMA;
 	}
 
+	public DinnerItem(String place, String day, String type, String description, String period, boolean gluten, boolean laktose) {
+		this(place, day, Type.valueOf(type), description, period, gluten, laktose);
+	}
+	
 	public DinnerItem(String place, String day, Type type, String description, String period, boolean gluten, boolean laktose) {
 		this.place = place;
 		this.day = day;

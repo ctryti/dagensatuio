@@ -40,9 +40,10 @@ public class PlacesActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 
 		requestWindowFeature(Window.FEATURE_PROGRESS);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setProgressBarVisibility(false);
-		setContentView(R.layout.main);
+		//setContentView(R.layout.main);
 
 		mDbAdapter = new DatabaseAdapter(this);
 		mDbAdapter.open();
@@ -56,7 +57,7 @@ public class PlacesActivity extends ListActivity {
 	private void updateView() {
 		Log.i(TAG, "Refresheing mCursor");
 		mCursor = mDbAdapter.fetchAllPlaces();
-		setListAdapter(new SimpleCursorAdapter(this, R.layout.menu_item_row, mCursor, new String[] {DatabaseAdapter.KEY_PLACE}, new int[]{R.id.text1} ));
+		//setListAdapter(new SimpleCursorAdapter(this, R.layout.menu_item_row, mCursor, new String[] {DatabaseAdapter.KEY_PLACE}, new int[]{R.id.text1} ));
 	}
 
 	@Override
