@@ -20,22 +20,27 @@ public class HomeActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		setContentView(R.layout.home_activity);
 		
 		mDbAdapter = new DatabaseAdapter(this);
 		mDbAdapter.open();
 		
 		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke Kafé");  
 		
+		for(DinnerItem item : items)
+			System.out.println(item.getDescription());
+		
 		DinnerItemAdapter adapter = new DinnerItemAdapter(this, R.layout.custom_list_row, items);
 		
-		ListView lv = (ListView) findViewById(R.id.list);
+		ListView lv = (ListView)findViewById(R.id.list);
 		
-		lv.setAdapter(adapter);
+		if(lv != null)
+			lv.setAdapter(adapter);
 		
-		setContentView(R.layout.home_activity);
+		
 		
 		
 	}
@@ -70,14 +75,17 @@ public class HomeActivity extends Activity {
 		@Override
 		public View getView(int arg0, View arg1, ViewGroup arg2) {
 			DinnerItem item = mList.get(arg0);
-			LayoutInflater inflater = LayoutInflater.from(mCtx);
-			View v = inflater.inflate(mRowResID, arg2);
-			TextView type = (TextView)v.findViewById(R.id.type);
+			//LayoutInflater inflater = LayoutInflater.from(mCtx);
+			
+			View inflatedView = View.inflate(mCtx, R.layout.custom_list_row, null);
+			
+			//View v = inflater.inflate(mRowResID, arg2);
+			TextView type = (TextView)inflatedView.findViewById(R.id.type);
 			type.setText(item.getType());
-			TextView desc = (TextView)v.findViewById(R.id.desc);
+			TextView desc = (TextView)inflatedView.findViewById(R.id.desc);
 			desc.setText(item.getDescription());
 			
-			return v;
+			return inflatedView;
 		}
 		
 	}

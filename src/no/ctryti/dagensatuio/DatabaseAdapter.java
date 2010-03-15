@@ -31,7 +31,7 @@ public class DatabaseAdapter {
 	private Context mCtx;
 	
 	private static class DatabaseHelper extends SQLiteOpenHelper {
-
+		
 		private static final String TAG = "DatabaseAdapter$DatabaseHelper";
 		private static final int DATABASE_VERSION = 5;
 
@@ -198,7 +198,9 @@ public class DatabaseAdapter {
 	}
 	
 	public ArrayList<DinnerItem> getAllFromPlace(String place) {
-		Cursor c = mDb.query(KEY_DISH, new String[] {KEY_ROWID, KEY_PLACE, KEY_DAY, KEY_PERIOD, KEY_TYPE, KEY_DESC }, KEY_PLACE+"='2'", null, null, null, null);
+		//Cursor c = mDb.query(KEY_DISH, new String[] {KEY_ROWID, KEY_PLACE, KEY_DAY, KEY_PERIOD, KEY_TYPE, KEY_DESC }, KEY_PLACE+"='2'", null, null, null, null);
+		String query = "SELECT " + KEY_PLACE+"."+KEY_PLACE+", "+KEY_DAY+"."+KEY_DAY+", "+KEY_TYPE+"."+KEY_TYPE+", "+KEY_DISH+"."+KEY_DESC+", "+KEY_DISH+"."+KEY_PERIOD+" FROM "+KEY_DISH+" JOIN "+KEY_PLACE+" ON "+KEY_DISH+"."+KEY_PLACE+" = "+KEY_PLACE+"._id JOIN "+KEY_TYPE+" ON "+KEY_DISH+"."+KEY_TYPE+" = "+ KEY_TYPE+"._id JOIN "+KEY_DAY+" ON "+KEY_DISH+"."+KEY_DAY+" = "+KEY_DAY+"._id WHERE "+KEY_PLACE+"."+KEY_PLACE+"="+place;
+		Cursor c = mDb.rawQuery(query, null);
 			
 		ArrayList<DinnerItem> list = new ArrayList<DinnerItem>();
 		DinnerItem item;
@@ -207,10 +209,10 @@ public class DatabaseAdapter {
 			String desc, day, period, type;
 			
 			do {
-				desc = c.getString(c.getColumnIndex(KEY_DESC));
-				period = c.getString(c.getColumnIndex(KEY_PERIOD));
-				day = c.getString(c.getColumnIndex(KEY_DAY));
-				type = c.getString(c.getColumnIndex(KEY_TYPE));
+				desc = c.getString(3);
+				period = c.getString(4);
+				day = c.getString(1);
+				type = c.getString(2);
 				
 				item = new DinnerItem(place, day, type, desc, period, false, false);
 				list.add(item);
