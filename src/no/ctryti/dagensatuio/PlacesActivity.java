@@ -55,7 +55,7 @@ public class PlacesActivity extends ListActivity {
 	
 	private void updateView() {
 		Log.i(TAG, "Refresheing mCursor");
-		mCursor = mDbAdapter.fetchAll();
+		mCursor = mDbAdapter.fetchAllPlaces();
 		setListAdapter(new SimpleCursorAdapter(this, R.layout.menu_item_row, mCursor, new String[] {DatabaseAdapter.KEY_PLACE}, new int[]{R.id.text1} ));
 	}
 

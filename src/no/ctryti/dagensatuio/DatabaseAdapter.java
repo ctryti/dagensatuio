@@ -127,10 +127,10 @@ public class DatabaseAdapter {
 		mDbHelper.reCreateDatabase(mDb);
 	}	
 
-	public Cursor fetchAll() {
+	public Cursor fetchAllPlaces() {
 		return mDb.query(KEY_PLACE, new String[] {KEY_ROWID, KEY_PLACE}, null, null, null, null, null);
 	}
-
+	
 	public long insert(ContentValues values) {
 		boolean valid = true;
 		if(!values.containsKey(KEY_DAY))
