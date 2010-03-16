@@ -6,7 +6,6 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -21,23 +20,22 @@ public class HomeActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		//requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 		setContentView(R.layout.home_activity);
 		
 		mDbAdapter = new DatabaseAdapter(this);
 		mDbAdapter.open();
 		
-		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kafÃ©");
+		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kafé");
 		
 		System.out.println("Items:");
 		for(DinnerItem item : items)
 			System.out.println(item.getDescription());
 		
-		ListView innerList = (ListView)findViewById(R.id.dish_list);
+		ListView innerList = (ListView)findViewById(R.id.home_list);
 	
 		if(innerList != null) {
-			
 			DinnerItemAdapter adapter = new DinnerItemAdapter(this, R.layout.custom_list_row, items);
 			innerList.setAdapter(adapter);
 		}
@@ -47,11 +45,9 @@ public class HomeActivity extends Activity {
 		
 		private Context mCtx;
 		private List<DinnerItem> mList;
-		private int mRowResID;
-		
+				
 		public DinnerItemAdapter(Context ctx, int rowResID, List<DinnerItem> list) {
 			mCtx = ctx;
-			mRowResID = rowResID;
 			mList = list;
 		}
 		
@@ -85,7 +81,6 @@ public class HomeActivity extends Activity {
 			
 			return inflatedView;
 		}
-		
 	}
 	
 }

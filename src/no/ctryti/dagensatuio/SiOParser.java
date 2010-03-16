@@ -2,7 +2,7 @@ package no.ctryti.dagensatuio;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,11 +15,9 @@ public class SiOParser {
 	
 	private static final String TAG = "SiOParser";
 	
-	private static final String NEW_LINE_TOKEN = "Â§";
+	private static final String NEW_LINE_TOKEN = "§";
 	private static final String END_OF_MENU = "&&";
  
-	
-	
 	private static final String days[] = {
 		"Mandag",
 		"Tirsdag",
@@ -34,6 +32,25 @@ public class SiOParser {
 	private static String place;
 	private static String period;
 
+	
+	
+	/* used for testing! */
+	public static void main(String[] args) {
+		ArrayList<DinnerItem> items;
+		try {
+			items = parse(new FileInputStream(new File("./frederikke+kafe")), "Frederikke kafé");
+			for(DinnerItem item : items) {
+				System.out.print(item.getDay());
+				System.out.print(" - "+item.getType());
+				System.out.print(" - "+item.getDescription());
+				System.out.println();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+	
 	public static ArrayList<DinnerItem> parse(InputStream source, String place) {
 
 		ArrayList<DinnerItem> menuEntries = new ArrayList<DinnerItem>();
@@ -94,13 +111,12 @@ public class SiOParser {
 		period = Calendar.getInstance().get(Calendar.YEAR) + " " + period;
 		/* compact multiple whitespaces into 1 space */
 		period = period.replaceAll("\\s+", " ");
-		Log.i(TAG, "Period: "+period);
-		
+		//Log.i(TAG, "Period: "+period);
 		
 		/* The current token should now be "Mandag" */
 		for (int i = 0; i < 5; i++) {
 			/* Frederikke Kafe is a special case, with extra shit html */
-			if (place.equals("Frederikke kafÃ©")) {
+			if (place.equals("Frederikke kafé")) {
 				menuEntries.addAll(Arrays.asList(parseFrederikke(i)));
 			} else if(place.equals("SV Kafeen")) {
 				menuEntries.addAll(Arrays.asList(parseSV(i)));
@@ -200,10 +216,21 @@ public class SiOParser {
 		sc.next();
 
 		sc.useDelimiter(NEW_LINE_TOKEN);
-		items[1].setDescription(cleanUpString(sc.next()));
-		items[2].setDescription(cleanUpString(sc.next()));
-		items[3].setDescription(cleanUpString(sc.next()));
 
+		String str;
+		
+		str = sc.next();
+		while(str.length() <= 1)
+			str = sc.next();
+		items[1].setDescription(cleanUpString(str));
+		str = sc.next();
+		while(str.length() <= 1)
+			str = sc.next();
+		items[2].setDescription(cleanUpString(str));
+		str = sc.next();
+		while(str.length() <= 1)
+			str = sc.next();
+		items[3].setDescription(cleanUpString(str));
 		
 		sc.useDelimiter(" ");
 

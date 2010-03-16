@@ -197,6 +197,11 @@ public class DatabaseAdapter {
 		return rowId;
 	}
 	
+	public ArrayList<DinnerItem> getItemsFromPlace(String place) {
+		
+		return null;		
+	}
+	
 	public ArrayList<DinnerItem> getAllFromPlace(String place) {
 			
 		//Cursor c = mDb.query(KEY_DISH, new String[] {KEY_ROWID, KEY_PLACE, KEY_DAY, KEY_PERIOD, KEY_TYPE, KEY_DESC }, KEY_PLACE+"='2'", null, null, null, null);
