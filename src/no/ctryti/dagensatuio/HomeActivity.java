@@ -28,21 +28,19 @@ public class HomeActivity extends Activity {
 		mDbAdapter = new DatabaseAdapter(this);
 		mDbAdapter.open();
 		
-		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke Kafé");  
+		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kafÃ©");
 		
+		System.out.println("Items:");
 		for(DinnerItem item : items)
 			System.out.println(item.getDescription());
 		
-		DinnerItemAdapter adapter = new DinnerItemAdapter(this, R.layout.custom_list_row, items);
-		
-		ListView lv = (ListView)findViewById(R.id.list);
-		
-		if(lv != null)
-			lv.setAdapter(adapter);
-		
-		
-		
-		
+		ListView innerList = (ListView)findViewById(R.id.dish_list);
+	
+		if(innerList != null) {
+			
+			DinnerItemAdapter adapter = new DinnerItemAdapter(this, R.layout.custom_list_row, items);
+			innerList.setAdapter(adapter);
+		}
 	}
 
 	private class DinnerItemAdapter extends BaseAdapter {
