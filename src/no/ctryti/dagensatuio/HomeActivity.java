@@ -3,6 +3,8 @@ package no.ctryti.dagensatuio;
 import java.util.ArrayList;
 import java.util.List;
 
+import no.ctryti.dagensatuio.R;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -27,7 +29,7 @@ public class HomeActivity extends Activity {
 		mDbAdapter = new DatabaseAdapter(this);
 		mDbAdapter.open();
 		
-		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kafé");
+		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kafÃ©");
 		
 		System.out.println("Items:");
 		for(DinnerItem item : items)

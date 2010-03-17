@@ -15,7 +15,7 @@ public class SiOParser {
 	
 	private static final String TAG = "SiOParser";
 	
-	private static final String NEW_LINE_TOKEN = "§";
+	private static final String NEW_LINE_TOKEN = "ï¿½";
 	private static final String END_OF_MENU = "&&";
  
 	private static final String days[] = {
@@ -38,7 +38,7 @@ public class SiOParser {
 	public static void main(String[] args) {
 		ArrayList<DinnerItem> items;
 		try {
-			items = parse(new FileInputStream(new File("./frederikke+kafe")), "Frederikke kafé");
+			items = parse(new FileInputStream(new File("./frederikke+kafe")), "Frederikke kafï¿½");
 			for(DinnerItem item : items) {
 				System.out.print(item.getDay());
 				System.out.print(" - "+item.getType());
@@ -116,7 +116,7 @@ public class SiOParser {
 		/* The current token should now be "Mandag" */
 		for (int i = 0; i < 5; i++) {
 			/* Frederikke Kafe is a special case, with extra shit html */
-			if (place.equals("Frederikke kafé")) {
+			if (place.equals("Frederikke kafï¿½")) {
 				menuEntries.addAll(Arrays.asList(parseFrederikke(i)));
 			} else if(place.equals("SV Kafeen")) {
 				menuEntries.addAll(Arrays.asList(parseSV(i)));
