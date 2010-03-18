@@ -23,43 +23,9 @@
 		android:textSize="8pt"
 		android:text="Frederikke kafé" />
 
-	<TextView android:id="@+id/monday"
-		android:layout_width="30px"
-		android:layout_height="30px"
-		android:layout_above="@id/home_bottom"
-		android:text="Man"/>
-
-	<TextView android:id="@+id/tirsdag"
-		android:layout_width="30px"
-		android:layout_height="30px"
-		android:layout_toRightOf="@id/monday"
-		android:layout_above="@id/home_bottom"
-		android:text="Tir"/>
-
-	<TextView android:id="@+id/onsdag"
-		android:layout_width="30px"
-		android:layout_height="30px"
-		android:layout_toRightOf="@id/tirsdag"
-		android:layout_above="@id/home_bottom"
-		android:text="Ons"/>
-
-	<TextView android:id="@+id/torsdag"
-		android:layout_width="30px"
-		android:layout_height="30px"
-		android:layout_toRightOf="@id/onsdag"
-		android:layout_above="@id/home_bottom"
-		android:text="Tor"/>
-
-	<TextView android:id="@+id/fredag"
-		android:layout_width="30px"
-		android:layout_height="30px"
-		android:layout_toRightOf="@id/torsdag"
-		android:layout_above="@id/home_bottom"
-		android:text="Fre"/>
-
 	<ListView android:id="@+id/home_list"
 		android:layout_below="@id/home_top"		
-		android:layout_above="@id/monday"
+		android:layout_above="@id/home_bottom"
 		android:layout_width="fill_parent" 
 		android:layout_height="fill_parent" />
 

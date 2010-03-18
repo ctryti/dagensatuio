@@ -203,12 +203,12 @@ public class DatabaseAdapter {
 	}
 	
 	public ArrayList<DinnerItem> getAllFromPlace(String place) {
-			
+		open();
 		//Cursor c = mDb.query(KEY_DISH, new String[] {KEY_ROWID, KEY_PLACE, KEY_DAY, KEY_PERIOD, KEY_TYPE, KEY_DESC }, KEY_PLACE+"='2'", null, null, null, null);
 		String query = "SELECT " + KEY_PLACE+"."+KEY_PLACE+", "+KEY_DAY+"."+KEY_DAY+", "+KEY_TYPE+"."+KEY_TYPE+", "+KEY_DISH+"."+KEY_DESC+", "+KEY_DISH+"."+KEY_PERIOD+" FROM "+KEY_DISH+" JOIN "+KEY_PLACE+" ON "+KEY_DISH+"."+KEY_PLACE+" = "+KEY_PLACE+"._id JOIN "+KEY_TYPE+" ON "+KEY_DISH+"."+KEY_TYPE+" = "+ KEY_TYPE+"._id JOIN "+KEY_DAY+" ON "+KEY_DISH+"."+KEY_DAY+" = "+KEY_DAY+"._id WHERE "+KEY_PLACE+"."+KEY_PLACE+"='"+place+"'";
 		//String query = "SELECT * FROM "+KEY_DISH+" JOIN "+KEY_PLACE+" ON "+KEY_DISH+"."+KEY_PLACE+" = "+KEY_PLACE+"._id JOIN "+KEY_TYPE+" ON "+KEY_DISH+"."+KEY_TYPE+" = "+ KEY_TYPE+"._id JOIN "+KEY_DAY+" ON "+KEY_DISH+"."+KEY_DAY+" = "+KEY_DAY+"._id WHERE "+KEY_PLACE+"."+KEY_PLACE+"='"+place+"'";
 		Cursor c = mDb.rawQuery(query, null);
-			
+		
 		ArrayList<DinnerItem> list = new ArrayList<DinnerItem>();
 		DinnerItem item;
 		
@@ -226,6 +226,7 @@ public class DatabaseAdapter {
 				
 			} while(c.moveToNext());
 		}
+		close();
 		c.close();
 		return list;
 	}

@@ -27,9 +27,9 @@ public class HomeActivity extends Activity {
 		setContentView(R.layout.home_activity);
 		
 		mDbAdapter = new DatabaseAdapter(this);
-		mDbAdapter.open();
-		
+		//mDbAdapter.open();
 		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kafé");
+		//mDbAdapter.close();
 		
 		System.out.println("Items:");
 		for(DinnerItem item : items)
@@ -69,19 +69,21 @@ public class HomeActivity extends Activity {
 		}
 
 		@Override
-		public View getView(int arg0, View arg1, ViewGroup arg2) {
+		public View getView(int arg0, View convertView, ViewGroup parent) {
 			DinnerItem item = mList.get(arg0);
 			//LayoutInflater inflater = LayoutInflater.from(mCtx);
-			
-			View inflatedView = View.inflate(mCtx, R.layout.custom_list_row, null);
+						
+			View row = convertView; 
+			if(row == null)	
+				row = View.inflate(mCtx, R.layout.custom_list_row, null);
 			
 			//View v = inflater.inflate(mRowResID, arg2);
-			TextView type = (TextView)inflatedView.findViewById(R.id.type);
+			TextView type = (TextView)row.findViewById(R.id.type);
 			type.setText(item.getType());
-			TextView desc = (TextView)inflatedView.findViewById(R.id.desc);
+			TextView desc = (TextView)row.findViewById(R.id.desc);
 			desc.setText(item.getDescription());
 			
-			return inflatedView;
+			return row;
 		}
 	}
 	

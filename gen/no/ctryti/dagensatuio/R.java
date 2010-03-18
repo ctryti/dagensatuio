@@ -13,14 +13,9 @@ public final class R {
     public static final class id {
         public static final int day_list=0x7f040002;
         public static final int desc=0x7f040001;
-        public static final int fredag=0x7f040009;
         public static final int home_bottom=0x7f040004;
-        public static final int home_list=0x7f04000a;
+        public static final int home_list=0x7f040005;
         public static final int home_top=0x7f040003;
-        public static final int monday=0x7f040005;
-        public static final int onsdag=0x7f040007;
-        public static final int tirsdag=0x7f040006;
-        public static final int torsdag=0x7f040008;
         public static final int type=0x7f040000;
     }
     public static final class layout {
