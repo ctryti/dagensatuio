@@ -32,7 +32,7 @@ public class HomeActivity extends Activity {
 		
 		setContentView(R.layout.home_activity);
 		
-		mDbAdapter = new DatabaseAdapter(this);
+		mDbAdapter = new DatabaseAdapter(this); 
 		
 		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kafé");
 		

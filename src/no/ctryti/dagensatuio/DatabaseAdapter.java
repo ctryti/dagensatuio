@@ -214,9 +214,28 @@ public class DatabaseAdapter {
 		
 		builder.setTables(DISH+" JOIN "+PLACE+" ON "+DISH+"."+PLACE+" = "+PLACE+"._id JOIN "+TYPE+" ON "+DISH+"."+TYPE+" = "+ TYPE+"._id JOIN "+DAY+" ON "+DISH+"."+DAY+" = "+DAY+"._id");
 		
+		Cursor c = builder.query(mDbHelper.getReadableDatabase(),null,null, null,null,null,null);
 		
+		ArrayList<DinnerItem> list = new ArrayList<DinnerItem>();
+		DinnerItem item;
 		
-		return null;
+		if(c.moveToFirst()) {
+			String desc, day, period, type;
+			
+			do {
+				desc = c.getString(3);
+				period = c.getString(4);
+				day = c.getString(1);
+				type = c.getString(2);
+				
+				item = new DinnerItem(place, day, type, desc, period, false, false);
+				list.add(item);
+				
+			} while(c.moveToNext());
+		}
+		close();
+		c.close();
+		return list;
 	}
 
 	public ArrayList<DinnerItem> getAllFromPlace(String place) {

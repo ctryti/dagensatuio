@@ -1,15 +1,11 @@
 package no.ctryti.dagensatuio;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Scanner;
-
-import android.util.Log;
 
 public class SiOParser {
 	
@@ -108,6 +104,7 @@ public class SiOParser {
 		/* remove any NEW_LINE_TOKENS that got into the period string */
 		period = period.replaceAll(NEW_LINE_TOKEN, "");
 		period = Calendar.getInstance().get(Calendar.YEAR) + " " + period;
+		
 		/* compact multiple whitespaces into 1 space */
 		period = period.replaceAll("\\s+", " ");
 		//Log.i(TAG, "Period: "+period);
@@ -115,7 +112,7 @@ public class SiOParser {
 		/* The current token should now be "Mandag" */
 		for (int i = 0; i < 5; i++) {
 			/* Frederikke Kafe is a special case, with extra shit html */
-			if (place.equals("Frederikke kafÃ©")) {
+			if (place.equals("Frederikke kafé")) {
 				menuEntries.addAll(Arrays.asList(parseFrederikke(i)));
 			} else if(place.equals("SV Kafeen")) {
 				menuEntries.addAll(Arrays.asList(parseSV(i)));
