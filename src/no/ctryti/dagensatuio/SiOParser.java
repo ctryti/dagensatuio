@@ -15,7 +15,7 @@ public class SiOParser {
 	
 	private static final String TAG = "SiOParser";
 	
-	private static final String NEW_LINE_TOKEN = "�";
+	private static final String NEW_LINE_TOKEN = "&";
 	private static final String END_OF_MENU = "&&";
  
 	private static final String days[] = {
@@ -33,23 +33,22 @@ public class SiOParser {
 	private static String period;
 
 	
-	
 	/* used for testing! */
-	public static void main(String[] args) {
-		ArrayList<DinnerItem> items;
-		try {
-			items = parse(new FileInputStream(new File("./frederikke+kafe")), "Frederikke kaf�");
-			for(DinnerItem item : items) {
-				System.out.print(item.getDay());
-				System.out.print(" - "+item.getType());
-				System.out.print(" - "+item.getDescription());
-				System.out.println();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
+//	public static void main(String[] args) {
+//		ArrayList<DinnerItem> items;
+//		try {
+//			items = parse(new FileInputStream(new File("./frederikke+kafe")), "Frederikke kafé");
+//			for(DinnerItem item : items) {
+//				System.out.print(item.getDay());
+//				System.out.print(" - "+item.getType());
+//				System.out.print(" - "+item.getDescription());
+//				System.out.println();
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			System.exit(1);
+//		}
+//	}
 	
 	public static ArrayList<DinnerItem> parse(InputStream source, String place) {
 
@@ -116,7 +115,7 @@ public class SiOParser {
 		/* The current token should now be "Mandag" */
 		for (int i = 0; i < 5; i++) {
 			/* Frederikke Kafe is a special case, with extra shit html */
-			if (place.equals("Frederikke kaf�")) {
+			if (place.equals("Frederikke kafé")) {
 				menuEntries.addAll(Arrays.asList(parseFrederikke(i)));
 			} else if(place.equals("SV Kafeen")) {
 				menuEntries.addAll(Arrays.asList(parseSV(i)));
@@ -124,6 +123,7 @@ public class SiOParser {
 				menuEntries.add(parseNormal(i));
 			}
 		}
+		checkGlutenAndLaktose(menuEntries);
 		return menuEntries;
 	}
 
@@ -185,8 +185,6 @@ public class SiOParser {
 	private static DinnerItem[] parseFrederikke(int num) {
 		DinnerItem[] items = new DinnerItem[6];
 
-
-		
 		for (int i = 0; i < items.length; i++)
 			items[i] = new DinnerItem(place, days[num], (DinnerItem.Type)null, null, period, false, false);
 
@@ -245,6 +243,22 @@ public class SiOParser {
 		items[5].setDescription(cleanUpString(sc.next().replaceAll(NEW_LINE_TOKEN, "")));
 		sc.useDelimiter(" ");
 		return items;
+	}
+	
+	private static void checkGlutenAndLaktose(ArrayList<DinnerItem> items) {
+		
+		for(DinnerItem item : items) {
+			String desc = item.getDescription();
+			if(desc.contains(" *")) {
+				item.setGluten(true);
+				desc = desc.replace(" *", "");
+			}
+			if(desc.contains(" L")) {
+				item.setLaktose(true);
+				desc = desc.replace(" L", "");
+			}
+			item.setDescription(desc);
+		}
 	}
 	
 	private static DinnerItem parseNormal(int num) {
