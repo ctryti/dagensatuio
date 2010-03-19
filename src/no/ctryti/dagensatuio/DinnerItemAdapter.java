@@ -2,6 +2,8 @@ package no.ctryti.dagensatuio;
 
 import java.util.List;
 
+import no.ctryti.dagensatuio.R;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

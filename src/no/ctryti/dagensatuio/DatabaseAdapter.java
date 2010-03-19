@@ -1,6 +1,7 @@
 package no.ctryti.dagensatuio;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 
 public class DatabaseAdapter {
@@ -16,15 +18,17 @@ public class DatabaseAdapter {
 	private static final String TAG = "DatabaseAdapter";
 	
 	/* Database column names */
-	public static final String KEY_PLACE = "place";
-	public static final String KEY_DAY = "day";
-	public static final String KEY_TYPE = "type";
-	public static final String KEY_DESC = "desc";
-	public static final String KEY_DISH = "dish";
-	public static final String KEY_PERIOD = "period";
-	public static final String KEY_GLUTEN = "has_gluten";
-	public static final String KEY_LAKTOSE = "has_laktose";
-	public static final String KEY_ROWID = "_id";
+	public static final String PLACE = "place";
+	public static final String DAY = "day";
+	public static final String TYPE = "type";
+	public static final String DESC = "desc";
+	public static final String DISH = "dish";
+	public static final String PERIOD = "period";
+	public static final String SPAN = "span";
+	public static final String YEAR = "year";
+	public static final String GLUTEN = "has_gluten";
+	public static final String LAKTOSE = "has_laktose";
+	public static final String ROWID = "_id";
 
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
@@ -33,38 +37,43 @@ public class DatabaseAdapter {
 	private static class DatabaseHelper extends SQLiteOpenHelper {
 		
 		private static final String TAG = "DatabaseAdapter$DatabaseHelper";
-		private static final int DATABASE_VERSION = 5;
+		private static final int DATABASE_VERSION = 6;
 
 		/* Create statements */
 		private static final String CREATE_TABLE_PLACES =
-			"create table " + KEY_PLACE + " (\n" +
+			"create table " + PLACE + " (\n" +
 			"\t_id integer primary key autoincrement, \n" +
-			"\t"+KEY_PLACE + " text not null unique\n" +
+			"\t"+PLACE + " text not null unique\n" +
 			");";
 		private static final String CREATE_TABLE_DAY =
-			"create table " + KEY_DAY + "(\n" +
+			"create table " + DAY + "(\n" +
 			"\t_id integer primary key autoincrement, \n" +
-			"\t"+KEY_DAY + " text not null unique\n" +
+			"\t"+DAY + " text not null unique\n" +
 			");";
 		private static final String CREATE_TABLE_TYPE =
-			"create table " + KEY_TYPE + "(\n" +
+			"create table " + TYPE + "(\n" +
 			"\t_id integer primary key autoincrement, \n" +
-			"\t"+KEY_TYPE + " text not null unique\n" +
+			"\t"+TYPE + " text not null unique\n" +
 			");";
-		private static final String CREATE_TABLE_DISH =
-			"create table " + KEY_DISH + "(\n" +
+		private static final String CREATE_TABLE_PERIOD =
+			"create table " + PERIOD + "(\n" +
 			"\t_id integer primary key autoincrement, \n" +
-			"\t"+KEY_DESC   + " text not null, \n" +
-			"\t"+KEY_PLACE  + " integer not null, \n" +
-			"\t"+KEY_DAY    + " integer not null, \n" +
-			"\t"+KEY_TYPE   + " integer not null, \n" +
-			"\t"+KEY_PERIOD   + " integer not null, \n" +
-			"\t"+KEY_GLUTEN + " integer not null, \n" +
-			"\t"+KEY_LAKTOSE+ " integer not null, \n" +
-			"\tforeign key (" + KEY_PLACE + ") REFERENCES " + KEY_PLACE + ", \n" + //"(_id)," +
-			"\tforeign key (" + KEY_DAY   + ") REFERENCES " + KEY_DAY   + ", \n" + //"(_id)," +
-			"\tforeign key (" + KEY_TYPE  + ") REFERENCES " + KEY_TYPE  + ", \n" + //"(_id)," +
-			"\tunique (" + KEY_DESC +", " + KEY_PERIOD + ", " + KEY_PLACE + ", " + KEY_DAY + ", \n" + KEY_TYPE + ")\n" +
+			"\t"
+			;
+		private static final String CREATE_TABLE_DISH =
+			"create table " + DISH + "(\n" +
+			"\t_id integer primary key autoincrement, \n" +
+			"\t"+DESC   + " text not null, \n" +
+			"\t"+PLACE  + " integer not null, \n" +
+			"\t"+DAY    + " integer not null, \n" +
+			"\t"+TYPE   + " integer not null, \n" +
+			"\t"+PERIOD   + " integer not null, \n" +
+			"\t"+GLUTEN + " integer not null, \n" +
+			"\t"+LAKTOSE+ " integer not null, \n" +
+			"\tforeign key (" + PLACE + ") REFERENCES " + PLACE + ", \n" + //"(_id)," +
+			"\tforeign key (" + DAY   + ") REFERENCES " + DAY   + ", \n" + //"(_id)," +
+			"\tforeign key (" + TYPE  + ") REFERENCES " + TYPE  + ", \n" + //"(_id)," +
+			"\tunique (" + DESC +", " + PERIOD + ", " + PLACE + ", " + DAY + ", \n" + TYPE + ")\n" +
 			");";
 	
 		public DatabaseHelper(Context context) {
@@ -77,7 +86,7 @@ public class DatabaseAdapter {
 			try {
 				db.execSQL(CREATE_TABLE_PLACES);
 				db.execSQL(CREATE_TABLE_DAY);
-				db.execSQL(CREATE_TABLE_TYPE);
+				db.execSQL(CREATE_TABLE_TYPE); 
 				db.execSQL(CREATE_TABLE_DISH);
 			} catch(Exception e) {
 				Log.e(TAG, "Something happend!:: "+e.getMessage());
@@ -93,10 +102,10 @@ public class DatabaseAdapter {
 
 		private void dropStatements(SQLiteDatabase db) {
 			try {
-				db.execSQL("DROP TABLE IF EXISTS " + KEY_DISH);
-				db.execSQL("DROP TABLE IF EXISTS " + KEY_PLACE);
-				db.execSQL("DROP TABLE IF EXISTS " + KEY_TYPE);
-				db.execSQL("DROP TABLE IF EXISTS " + KEY_DAY);
+				db.execSQL("DROP TABLE IF EXISTS " + DISH);
+				db.execSQL("DROP TABLE IF EXISTS " + PLACE);
+				db.execSQL("DROP TABLE IF EXISTS " + TYPE);
+				db.execSQL("DROP TABLE IF EXISTS " + DAY);
 			} catch(Exception e) {
 				Log.e(TAG, e.getMessage());
 			}
@@ -124,28 +133,30 @@ public class DatabaseAdapter {
 	}
 
 	public void reCreateDatabase() {
+		open();
 		mDbHelper.reCreateDatabase(mDb);
+		close();
 	}	
 
 	public Cursor fetchAllPlaces() {
-		return mDb.query(KEY_PLACE, new String[] {KEY_ROWID, KEY_PLACE}, null, null, null, null, null);
+		return mDb.query(PLACE, new String[] {ROWID, PLACE}, null, null, null, null, null);
 	}
 	
 	public long insert(ContentValues values) {
 		boolean valid = true;
-		if(!values.containsKey(KEY_DAY))
+		if(!values.containsKey(DAY))
 			valid = false;
-		if(!values.containsKey(KEY_DESC))
+		if(!values.containsKey(DESC))
 			valid = false;
-		if(!values.containsKey(KEY_PLACE))
+		if(!values.containsKey(PLACE))
 			valid = false;
-		if(!values.containsKey(KEY_TYPE))
+		if(!values.containsKey(TYPE))
 			valid = false;
-		if(!values.containsKey(KEY_PERIOD))
+		if(!values.containsKey(PERIOD))
 			valid = false;
-		if(!values.containsKey(KEY_GLUTEN))
+		if(!values.containsKey(GLUTEN))
 			valid = false;
-		if(!values.containsKey(KEY_LAKTOSE))
+		if(!values.containsKey(LAKTOSE))
 			valid = false;
 		if(!valid)
 			throw new IllegalArgumentException();
@@ -153,38 +164,38 @@ public class DatabaseAdapter {
 		ContentValues cv = new ContentValues();
 		long placeId, typeId, dayId;
 
-		cv.put(KEY_PLACE, values.getAsString(KEY_PLACE));
-		placeId = insertMinorValue(KEY_PLACE, cv);
+		cv.put(PLACE, values.getAsString(PLACE));
+		placeId = insertMinorValue(PLACE, cv);
 
 		cv.clear();
-		cv.put(KEY_TYPE, values.getAsString(KEY_TYPE));
-		typeId = insertMinorValue(KEY_TYPE, cv);
+		cv.put(TYPE, values.getAsString(TYPE));
+		typeId = insertMinorValue(TYPE, cv);
 
 		cv.clear();
-		cv.put(KEY_DAY, values.getAsString(KEY_DAY));
-		dayId = insertMinorValue(KEY_DAY, cv);
+		cv.put(DAY, values.getAsString(DAY));
+		dayId = insertMinorValue(DAY, cv);
 
 		cv.clear();
-		cv.put(KEY_PLACE, placeId);
-		cv.put(KEY_DAY, dayId);
-		cv.put(KEY_TYPE, typeId);
-		cv.put(KEY_DESC, values.getAsString(KEY_DESC));
-		cv.put(KEY_GLUTEN, values.getAsInteger(KEY_GLUTEN));
-		cv.put(KEY_LAKTOSE, values.getAsInteger(KEY_LAKTOSE));
-		cv.put(KEY_PERIOD, values.getAsString(KEY_PERIOD));
+		cv.put(PLACE, placeId);
+		cv.put(DAY, dayId);
+		cv.put(TYPE, typeId);
+		cv.put(DESC, values.getAsString(DESC));
+		cv.put(GLUTEN, values.getAsInteger(GLUTEN));
+		cv.put(LAKTOSE, values.getAsInteger(LAKTOSE));
+		cv.put(PERIOD, values.getAsString(PERIOD));
 				
-		long rowId = mDb.insert(KEY_DISH, null, cv);
+		long rowId = mDb.insert(DISH, null, cv);
 		if(rowId == -1) 
-			Log.e(TAG, "Failed to insert: " + values.getAsString(KEY_PLACE)+", "+ values.getAsString(KEY_PERIOD)+ "," +values.getAsString(KEY_DAY) + ", " + values.getAsString(KEY_TYPE) + "," + values.getAsString(KEY_DESC));
+			Log.e(TAG, "Failed to insert: " + values.getAsString(PLACE)+", "+ values.getAsString(PERIOD)+ "," +values.getAsString(DAY) + ", " + values.getAsString(TYPE) + "," + values.getAsString(DESC));
 		else	
-			Log.i(TAG, "Insert: " + values.getAsString(KEY_PLACE)+", "+ values.getAsString(KEY_PERIOD)+ "," +values.getAsString(KEY_DAY) + ", " + values.getAsString(KEY_TYPE) + ", "+values.getAsString(KEY_DESC));
+			Log.i(TAG, "Insert: " + values.getAsString(PLACE)+", "+ values.getAsString(PERIOD)+ "," +values.getAsString(DAY) + ", " + values.getAsString(TYPE) + ", "+values.getAsString(DESC));
 		//Log.i(TAG, "Inserted "+values.getAsString(KEY_PLACE)+","+values.getAsString(KEY_DAY));
 		return rowId;
 	}
 
 	private long insertMinorValue(String key, ContentValues v) {
 		long rowId;
-		Cursor c = mDb.query(true, key, new String[] {KEY_ROWID, key }, key + "='"+v.getAsString(key)+"'", null, null, null, null, null);
+		Cursor c = mDb.query(true, key, new String[] {ROWID, key }, key + "='"+v.getAsString(key)+"'", null, null, null, null, null);
 
 		if(c != null && c.getCount() > 0) {
 			c.moveToFirst();
@@ -192,23 +203,29 @@ public class DatabaseAdapter {
 			c.close();
 			return mDb.insert(key, null, v);
 		}
-		rowId = c.getInt(c.getColumnIndex(KEY_ROWID));
+		rowId = c.getInt(c.getColumnIndex(ROWID));
 		c.close();
 		return rowId;
 	}
 	
-	public ArrayList<DinnerItem> getItemsFromPlace(String place) {
+	public ArrayList<DinnerItem> getItems(String place) {
 		
-		return null;		
+		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+		
+		builder.setTables(DISH+" JOIN "+PLACE+" ON "+DISH+"."+PLACE+" = "+PLACE+"._id JOIN "+TYPE+" ON "+DISH+"."+TYPE+" = "+ TYPE+"._id JOIN "+DAY+" ON "+DISH+"."+DAY+" = "+DAY+"._id");
+		
+		
+		
+		return null;
 	}
-	
+
 	public ArrayList<DinnerItem> getAllFromPlace(String place) {
-			
+		open();
 		//Cursor c = mDb.query(KEY_DISH, new String[] {KEY_ROWID, KEY_PLACE, KEY_DAY, KEY_PERIOD, KEY_TYPE, KEY_DESC }, KEY_PLACE+"='2'", null, null, null, null);
-		String query = "SELECT " + KEY_PLACE+"."+KEY_PLACE+", "+KEY_DAY+"."+KEY_DAY+", "+KEY_TYPE+"."+KEY_TYPE+", "+KEY_DISH+"."+KEY_DESC+", "+KEY_DISH+"."+KEY_PERIOD+" FROM "+KEY_DISH+" JOIN "+KEY_PLACE+" ON "+KEY_DISH+"."+KEY_PLACE+" = "+KEY_PLACE+"._id JOIN "+KEY_TYPE+" ON "+KEY_DISH+"."+KEY_TYPE+" = "+ KEY_TYPE+"._id JOIN "+KEY_DAY+" ON "+KEY_DISH+"."+KEY_DAY+" = "+KEY_DAY+"._id WHERE "+KEY_PLACE+"."+KEY_PLACE+"='"+place+"'";
+		String query = "SELECT " + PLACE+"."+PLACE+", "+DAY+"."+DAY+", "+TYPE+"."+TYPE+", "+DISH+"."+DESC+", "+DISH+"."+PERIOD+" FROM "+DISH+" JOIN "+PLACE+" ON "+DISH+"."+PLACE+" = "+PLACE+"._id JOIN "+TYPE+" ON "+DISH+"."+TYPE+" = "+ TYPE+"._id JOIN "+DAY+" ON "+DISH+"."+DAY+" = "+DAY+"._id WHERE "+PLACE+"."+PLACE+"='"+place+"'";
 		//String query = "SELECT * FROM "+KEY_DISH+" JOIN "+KEY_PLACE+" ON "+KEY_DISH+"."+KEY_PLACE+" = "+KEY_PLACE+"._id JOIN "+KEY_TYPE+" ON "+KEY_DISH+"."+KEY_TYPE+" = "+ KEY_TYPE+"._id JOIN "+KEY_DAY+" ON "+KEY_DISH+"."+KEY_DAY+" = "+KEY_DAY+"._id WHERE "+KEY_PLACE+"."+KEY_PLACE+"='"+place+"'";
 		Cursor c = mDb.rawQuery(query, null);
-			
+		
 		ArrayList<DinnerItem> list = new ArrayList<DinnerItem>();
 		DinnerItem item;
 		
@@ -226,9 +243,8 @@ public class DatabaseAdapter {
 				
 			} while(c.moveToNext());
 		}
+		close();
 		c.close();
 		return list;
 	}
-	
-
 }
