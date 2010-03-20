@@ -8,14 +8,18 @@
 package no.ctryti.dagensatuio;
 
 public final class R {
+    public static final class array {
+        public static final int months=0x7f040001;
+        public static final int weekdays=0x7f040000;
+    }
     public static final class attr {
     }
     public static final class id {
-        public static final int desc=0x7f040001;
-        public static final int home_bottom=0x7f040003;
-        public static final int home_list=0x7f040004;
-        public static final int home_top=0x7f040002;
-        public static final int type=0x7f040000;
+        public static final int desc=0x7f050001;
+        public static final int home_bottom=0x7f050003;
+        public static final int home_list=0x7f050004;
+        public static final int home_top=0x7f050002;
+        public static final int type=0x7f050000;
     }
     public static final class layout {
         public static final int custom_list_row=0x7f020000;

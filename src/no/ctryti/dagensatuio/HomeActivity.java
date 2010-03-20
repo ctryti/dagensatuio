@@ -36,6 +36,10 @@ public class HomeActivity extends Activity {
 		
 		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kafé");
 		
+		TextView top_tv = (TextView)findViewById(R.id.home_top);
+		
+		top_tv.setText(items.get(0).getPeriod());
+		
 		System.out.println("Items:");
 		for(DinnerItem item : items)
 			Log.i(TAG, item.getDescription());

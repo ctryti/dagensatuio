@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class SiOParser {
@@ -22,11 +22,30 @@ public class SiOParser {
 		"Fredag",
 		"&&"
 	};
-
+	
+	private static HashMap<String, Integer> months;
+	static {
+		months = new HashMap<String, Integer>();
+		months.put("januar", Calendar.JANUARY);
+		months.put("februar", Calendar.FEBRUARY);
+		months.put("mars", Calendar.MARCH);
+		months.put("april", Calendar.APRIL);
+		months.put("mai", Calendar.MAY);
+		months.put("juni", Calendar.JUNE);
+		months.put("juli", Calendar.JULY);
+		months.put("august", Calendar.AUGUST);
+		months.put("september", Calendar.SEPTEMBER);
+		months.put("oktober", Calendar.OCTOBER);
+		months.put("november", Calendar.NOVEMBER);
+		months.put("desember", Calendar.DECEMBER);
+	}
+	
+	
 	private static String curToken;
 	private static Scanner sc;
 	private static String place;
 	private static String period;
+	
 
 	
 	/* used for testing! */
@@ -53,6 +72,9 @@ public class SiOParser {
 		String content;
 		String treatedContent;
 
+
+		
+		
 		SiOParser.place = place;
 		curToken = "";
 		treatedContent = "";
@@ -88,7 +110,7 @@ public class SiOParser {
 		while (sc.hasNext()) {
 			curToken = sc.next();
 			if (curToken.equals("Uke")) {
-				period = curToken + " ";
+				//period = curToken + " ";
 				while (sc.hasNext()) {
 					curToken = sc.next();
 					if (!curToken.equals(days[0])) {
@@ -103,11 +125,16 @@ public class SiOParser {
 
 		/* remove any NEW_LINE_TOKENS that got into the period string */
 		period = period.replaceAll(NEW_LINE_TOKEN, "");
-		period = Calendar.getInstance().get(Calendar.YEAR) + " " + period;
+		//period = Calendar.getInstance().get(Calendar.YEAR) + " " + period;
 		
 		/* compact multiple whitespaces into 1 space */
 		period = period.replaceAll("\\s+", " ");
 		//Log.i(TAG, "Period: "+period);
+		
+		
+		
+		Calendar date = Calendar.getInstance();
+//		date.set(date.get(Calendar.YEAR), date.get(months.get()), day)
 		
 		/* The current token should now be "Mandag" */
 		for (int i = 0; i < 5; i++) {

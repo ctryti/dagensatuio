@@ -1,5 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
-    <string name="app_name">Dagens@UiO</string>
+
+	<string name="app_name">Dagens@UiO</string>
+	
+	<string-array name="weekdays">
+		<!--
+			There are 3 fridays because ctryti saw no point in showing saturday
+			and sunday = hack
+		-->
+		<item>Fredag</item>
+		<item>Mandag</item>
+		<item>Tirsdag</item>
+		<item>Onsdag</item>
+		<item>Torsdag</item>
+		<item>Fredag</item>
+		<item>Fredag</item>
+	</string-array>
+	
+	<string-array name="months">
+		<item>Januar</item>
+		<item>Februar</item>
+		<item>Mars</item>
+		<item>April</item>
+		<item>Mai</item>
+		<item>Juni</item>
+		<item>Juli</item>
+		<item>August</item>
+		<item>September</item>
+		<item>Oktober</item>
+		<item>November</item>
+		<item>Desember</item>
+	</string-array>
+
 </resources>

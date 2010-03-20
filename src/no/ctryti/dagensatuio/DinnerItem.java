@@ -1,10 +1,14 @@
 package no.ctryti.dagensatuio;
 
+import java.util.Calendar;
+
+
 public class DinnerItem {
 	
 	private String  place;
 	private String  day;
 	private Type    type;
+	private Calendar date;
 	private String  description;
 	private String  period;
 	private boolean gluten;
