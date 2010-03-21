@@ -3,7 +3,6 @@ package no.ctryti.dagensatuio;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.R.string;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -33,11 +32,6 @@ public class DatabaseAdapter {
 
 	private static final HashMap<String, String> columnMap;
 	static {
-		
-		//builder.setTables(DISH+" JOIN "+PLACE+" ON "+DISH+"."+PLACE+" = "+PLACE+"._id JOIN "+TYPE+" ON "+DISH+"."+TYPE+" = "+ TYPE+"._id JOIN "+DAY+" ON "+DISH+"."+DAY+" = "+DAY+"._id");
-		
-		//String query = "SELECT " + PLACE+"."+PLACE+", "+DAY+"."+DAY+", "+TYPE+"."+TYPE+", "+DISH+"."+DESC+", "+DISH+"."+PERIOD+" FROM "+DISH+" JOIN "+PLACE+" ON "+DISH+"."+PLACE+" = "+PLACE+"._id JOIN "+TYPE+" ON "+DISH+"."+TYPE+" = "+ TYPE+"._id JOIN "+DAY+" ON "+DISH+"."+DAY+" = "+DAY+"._id WHERE "+PLACE+"."+PLACE+"='"+place+"'";
-
 		columnMap = new HashMap<String, String>();
 		columnMap.put(PLACE, PLACE+"."+PLACE);
 		columnMap.put(DAY, DAY+"."+DAY);
@@ -48,7 +42,6 @@ public class DatabaseAdapter {
 		columnMap.put(LAKTOSE, DISH+"."+LAKTOSE);
 	}
 	
-	
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
 	private Context mCtx;
@@ -57,7 +50,7 @@ public class DatabaseAdapter {
 	private static class DatabaseHelper extends SQLiteOpenHelper {
 		
 		private static final String TAG = "DatabaseAdapter$DatabaseHelper";
-		private static final int DATABASE_VERSION = 6;
+		private static final int DATABASE_VERSION = 7;
 
 		/* Create statements */
 		private static final String CREATE_TABLE_PLACES =
@@ -66,17 +59,17 @@ public class DatabaseAdapter {
 			"\t"+PLACE+" text not null unique\n" +
 			");";
 		private static final String CREATE_TABLE_DAY =
-			"create table " + DAY + "(\n" +
+			"create table " + DAY + " (\n" +
 			"\t_id integer primary key autoincrement, \n" +
 			"\t"+DAY + " text not null unique\n" +
 			");";
 		private static final String CREATE_TABLE_TYPE =
-			"create table " + TYPE + "(\n" +
+			"create table " + TYPE + " (\n" +
 			"\t_id integer primary key autoincrement, \n" +
 			"\t"+TYPE + " text not null unique\n" +
 			");";
 		private static final String CREATE_TABLE_DISH =
-			"create table " + DISH + "(\n" +
+			"create table " + DISH + " (\n" +
 			"\t_id integer primary key autoincrement, \n" +
 			"\t"+DESC   + " text not null, \n" +
 			"\t"+PLACE  + " integer not null, \n" +
@@ -88,7 +81,7 @@ public class DatabaseAdapter {
 			"\tforeign key (" + PLACE + ") REFERENCES " + PLACE + ", \n" + //"(_id)," +
 			"\tforeign key (" + DAY   + ") REFERENCES " + DAY   + ", \n" + //"(_id)," +
 			"\tforeign key (" + TYPE  + ") REFERENCES " + TYPE  + ", \n" + //"(_id)," +
-			"\tunique (" + DESC +", " + PERIOD + ", " + PLACE + ", " + DAY + ", \n" + TYPE + ")\n" +
+			"\tunique (" + DESC +", " + PERIOD + ", " + PLACE + ", " + DAY + ", " + TYPE + ")\n" +
 			");";
 	
 		public DatabaseHelper(Context context) {
@@ -125,11 +118,7 @@ public class DatabaseAdapter {
 				Log.e(TAG, e.getMessage());
 			}
 		}
-
-		
-		//03-21 16:49:17.268: ERROR/AndroidRuntime(866): Caused by: android.database.sqlite.SQLiteException: near "dish": syntax error: , while compiling: SELECT place.place, day.day, type.type, dish.desc, dish.period, dish.has_gluten, dish.has_laktose FROM dish,type ,day,place WHERE (place.place='Frederikke kafé'dish.period=201011day.day=dish.daytype.type=dish.type)
-
-		
+	
 		private void reCreateDatabase(SQLiteDatabase db) {
 			Log.i(TAG, "Re-creating the database (version " + DATABASE_VERSION + ")");
 			dropStatements(db);
@@ -162,25 +151,28 @@ public class DatabaseAdapter {
 		return mDb.query(PLACE, new String[] {_ID, PLACE}, null, null, null, null, null);
 	}
 	
-	public long insert(ContentValues values) {
-		boolean valid = true;
+	private boolean validInsertValues(ContentValues values) {
 		if(!values.containsKey(DAY))
-			valid = false;
+			return false;
 		if(!values.containsKey(DESC))
-			valid = false;
+			return false;
 		if(!values.containsKey(PLACE))
-			valid = false;
+			return false;
 		if(!values.containsKey(TYPE))
-			valid = false;
+			return false;
 		if(!values.containsKey(PERIOD))
-			valid = false;
+			return false;
 		if(!values.containsKey(GLUTEN))
-			valid = false;
+			return false;
 		if(!values.containsKey(LAKTOSE))
-			valid = false;
-		if(!valid)
+			return false;
+		return true;
+	}
+	
+	public long insert(ContentValues values) {
+		if(!validInsertValues(values))
 			throw new IllegalArgumentException();
-
+		
 		ContentValues cv = new ContentValues();
 		long placeId, typeId, dayId;
 
@@ -209,10 +201,15 @@ public class DatabaseAdapter {
 			Log.e(TAG, "Failed to insert: " + values.getAsString(PLACE)+", "+ values.getAsString(PERIOD)+ "," +values.getAsString(DAY) + ", " + values.getAsString(TYPE) + "," + values.getAsString(DESC));
 		else	
 			Log.i(TAG, "Insert: " + values.getAsString(PLACE)+", "+ values.getAsString(PERIOD)+ "," +values.getAsString(DAY) + ", " + values.getAsString(TYPE) + ", "+values.getAsString(DESC));
-		//Log.i(TAG, "Inserted "+values.getAsString(KEY_PLACE)+","+values.getAsString(KEY_DAY));
+
 		return rowId;
 	}
 
+	/* 
+	 * minor values include all values with their own tables - day, type and place
+	 * If its the first appearance, it is inserted. If not, it's fetched and it's 
+	 * rowId is returned
+	 */
 	private long insertMinorValue(String key, ContentValues v) {
 		long rowId;
 		Cursor c = mDb.query(true, key, new String[] {_ID, key }, key + "='"+v.getAsString(key)+"'", null, null, null, null, null);
@@ -228,13 +225,13 @@ public class DatabaseAdapter {
 		return rowId;
 	}
 	
+	/* Finds the most recent period */
 	private String mostRecentPeriod() {
-		
-		Cursor c = mDb.query(true, DISH, new String[] {PERIOD }, null, null, null, null, PERIOD, "1");
+		Cursor c = mDb.query(true, DISH, new String[] {PERIOD}, null, null, null, null, PERIOD, "1");
 		if(c != null && c.getCount() > 0)
 			c.moveToFirst();
 		else 
-			return "";
+			return null;
 		
 		String period = c.getString(c.getColumnIndex(PERIOD));
 		return period;
@@ -243,9 +240,7 @@ public class DatabaseAdapter {
 	public ArrayList<DinnerItem> getItems(String place, String period) {
 		
 		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-		
-		//builder.setTables(DISH+" JOIN "+PLACE+" ON "+DISH+"."+PLACE+" = "+PLACE+"._id JOIN "+TYPE+" ON "+DISH+"."+TYPE+" = "+ TYPE+"._id JOIN "+DAY+" ON "+DISH+"."+DAY+" = "+DAY+"._id");
-		
+
 		open();
 		
 		builder.setProjectionMap(columnMap);
@@ -254,30 +249,32 @@ public class DatabaseAdapter {
 		builder.appendWhere(DAY+"."+_ID+"="+DISH+"."+DAY);
 		builder.appendWhere(" AND "+TYPE+"."+_ID+"="+DISH+"."+TYPE);
 
+		//SELECT place.place, day.day, type.type, dish.desc, dish.period, dish.has_gluten, dish.has_laktose FROM dish,type,day,place WHERE ((day._id=dish.day AND type._id=dish.type AND dish.period='201012' AND place.place='Frederikke kafÃ©' AND dish.place=place._id)
+		//SELECT place.place, day.day, type.type, dish.desc, dish.period, dish.has_gluten, dish.has_laktose FROM dish,type,day,place WHERE (day._id=dish.day AND type._id=dish.type AND dish.period='201012' AND place.place='Frederikke kafÃ©' AND dish.place=place._id))
+
+		
+		if(period != null) {
+			builder.appendWhere(" AND "+DISH+"."+PERIOD+"='"+period+"'");
+		} else {
+			String mostRecent = mostRecentPeriod();
+			if(mostRecent != null)
+				builder.appendWhere(" AND "+DISH+"."+PERIOD+"='"+mostRecent+"'");
+		}
+		
 		if(place != null)
 			builder.appendWhere(" AND "+columnMap.get(PLACE)+"='"+place+"' AND "+DISH+"."+PLACE + "="+PLACE+"."+_ID);
+	
+		//System.out.println(builder.buildQuery(new String[]{ PLACE, DAY, TYPE, DESC, PERIOD, GLUTEN, LAKTOSE },null,null,null,null,null,null));
+		Cursor c = builder.query(mDb,new String[]{ PLACE, DAY, TYPE, DESC, PERIOD, GLUTEN, LAKTOSE },null,null,null,null,null);
 		
-		if(period != null)
-			builder.appendWhere(" AND "+DISH+"."+PERIOD+"="+period);
-		else
-			builder.appendWhere(" AND "+DISH+"."+PERIOD+"="+mostRecentPeriod());
-		
-		Cursor c = builder.query(mDbHelper.getReadableDatabase(),new String[]{ PLACE, DAY, TYPE, DESC, PERIOD, GLUTEN, LAKTOSE },null,null,null,null,null);
-		
-		System.out.println(builder.buildQuery(new String[]{ PLACE, DAY, TYPE, DESC, PERIOD, GLUTEN, LAKTOSE },null,null,null,null,null, null));
 		ArrayList<DinnerItem> list = new ArrayList<DinnerItem>();
 		DinnerItem item;
-		
-		String a[] = c.getColumnNames();
-		
-		for(String s : a)
-			System.out.println(s);
-		
-		
+		String desc, type;
+		boolean laktose, gluten;
+		int day;
+			
 		if(c.moveToFirst()) {
-			String desc, type;
-			boolean laktose, gluten;
-			int day;
+						
 			do {
 				desc = c.getString(c.getColumnIndex(DESC));
 				period = c.getString(c.getColumnIndex(PERIOD));
@@ -291,35 +288,7 @@ public class DatabaseAdapter {
 				
 			} while(c.moveToNext());
 		}
-		close();
-		c.close();
-		return list;
-	}
 
-	public ArrayList<DinnerItem> getAllFromPlace(String place) {
-		open();
-		//Cursor c = mDb.query(KEY_DISH, new String[] {KEY_ROWID, KEY_PLACE, KEY_DAY, KEY_PERIOD, KEY_TYPE, KEY_DESC }, KEY_PLACE+"='2'", null, null, null, null);
-		String query = "SELECT " + PLACE+"."+PLACE+", "+DAY+"."+DAY+", "+TYPE+"."+TYPE+", "+DISH+"."+DESC+", "+DISH+"."+PERIOD+" FROM "+DISH+" JOIN "+PLACE+" ON "+DISH+"."+PLACE+" = "+PLACE+"._id JOIN "+TYPE+" ON "+DISH+"."+TYPE+" = "+ TYPE+"._id JOIN "+DAY+" ON "+DISH+"."+DAY+" = "+DAY+"._id WHERE "+PLACE+"."+PLACE+"='"+place+"'";
-		//String query = "SELECT * FROM "+KEY_DISH+" JOIN "+KEY_PLACE+" ON "+KEY_DISH+"."+KEY_PLACE+" = "+KEY_PLACE+"._id JOIN "+KEY_TYPE+" ON "+KEY_DISH+"."+KEY_TYPE+" = "+ KEY_TYPE+"._id JOIN "+KEY_DAY+" ON "+KEY_DISH+"."+KEY_DAY+" = "+KEY_DAY+"._id WHERE "+KEY_PLACE+"."+KEY_PLACE+"='"+place+"'";
-		Cursor c = mDb.rawQuery(query, null);
-		
-		ArrayList<DinnerItem> list = new ArrayList<DinnerItem>();
-		DinnerItem item;
-		
-		if(c.moveToFirst()) {
-			String desc, period, type;
-			int day;
-			do {
-				desc = c.getString(3);
-				period = c.getString(4);
-				day = c.getInt(1);
-				type = c.getString(2);
-				
-				item = new DinnerItem(place, day, type, desc, period, false, false);
-				list.add(item);
-				
-			} while(c.moveToNext());
-		}
 		close();
 		c.close();
 		return list;

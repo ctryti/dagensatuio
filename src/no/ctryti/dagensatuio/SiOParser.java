@@ -1,7 +1,5 @@
 package no.ctryti.dagensatuio;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,9 +8,11 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import android.content.Context;
+
 //import android.util.Log;
 
-public class SiOParser {
+public abstract class SiOParser extends Context {
 	
 	private static final String TAG = "SiOParser";
 	
@@ -27,6 +27,9 @@ public class SiOParser {
 		"Fredag",
 		"&&"
 	};
+	
+	
+	
 	
 	private static HashMap<String, Integer> calConstants;
 	static {
@@ -44,7 +47,6 @@ public class SiOParser {
 		calConstants.put("november", Calendar.NOVEMBER);
 		calConstants.put("desember", Calendar.DECEMBER);
 	}
-	
 	
 	private static String curToken;
 	private static Scanner sc;
@@ -77,9 +79,6 @@ public class SiOParser {
 
 		String content;
 		String treatedContent;
-
-
-		
 		
 		SiOParser.place = place;
 		curToken = "";
@@ -107,14 +106,12 @@ public class SiOParser {
 		 */
 		treatedContent = treatedContent.replace("* = Uten", END_OF_MENU);
 
-		
 		sc = new Scanner(treatedContent);
 		
 		/*
 		 * Scan to the token "Uke" and save the following string until "Mandag"
 		 * as the period
 		 */
-		
 		String lastDay = "";
 		String month = "";
 
@@ -147,14 +144,13 @@ public class SiOParser {
 		
 		lastDay = lastDay.replace(".", "");
 		date.setMinimalDaysInFirstWeek(3); // European way of counting weeks.
-		System.out.println(month);
 		date.set(date.get(Calendar.YEAR), date.get(calConstants.get(month.toLowerCase())), Integer.parseInt(lastDay));
 		period = date.get(Calendar.YEAR)+""+date.get(Calendar.WEEK_OF_YEAR);
 		
 		/* The current token should now be "Mandag" */
 		for (int i = Calendar.MONDAY; i <= Calendar.FRIDAY; i++) {
 			/* Frederikke Kafe is a special case, with extra shit html */
-			if (place.equals("Frederikke kaf\u00e9")) {
+			if (place.equals("Frederikke kafé")) {
 				menuEntries.addAll(Arrays.asList(parseFrederikke(i)));
 			} else if(place.equals("SV Kafeen")) {
 				menuEntries.addAll(Arrays.asList(parseSV(i)));
@@ -175,14 +171,8 @@ public class SiOParser {
 		items[0].setType(DinnerItem.Type.DAGENS);
 		items[1].setType(DinnerItem.Type.VEGETAR);
 		items[2].setType(DinnerItem.Type.OPTIMA);
-
-//		while(sc.hasNext()) {
-//			System.out.println(sc.nextLine());
-//		}
-//		if(!sc.hasNext())
-//			return null;
-
 		sc.useDelimiter(" ");
+
 		/* First find and create DAGENS */
 		curToken = sc.next();
 		while (!curToken.equals("Dagens:")) {
@@ -254,8 +244,8 @@ public class SiOParser {
 
 		sc.useDelimiter(NEW_LINE_TOKEN);
 
+		/* 1 or more NEW_LINE_TOKENS separate these descriptions */
 		String str;
-		
 		str = sc.next();
 		while(str.length() <= 1)
 			str = sc.next();
@@ -284,6 +274,7 @@ public class SiOParser {
 		return items;
 	}
 	
+	/* find out which dishes are without laktose and/or gluten  */
 	private static void checkGlutenAndLaktose(ArrayList<DinnerItem> items) {
 		
 		for(DinnerItem item : items) {
@@ -300,6 +291,7 @@ public class SiOParser {
 		}
 	}
 	
+	/* used by cafees with only 1 menu-item */
 	private static DinnerItem parseNormal(int day) {
 		String description = "";
 		boolean gluten = false, laktose = false;
@@ -315,6 +307,7 @@ public class SiOParser {
 		return new DinnerItem(place, day, DinnerItem.Type.DAGENS, description, period, gluten, laktose);
 	}
 
+	/*  */
 	private static String cleanUpString(String s) {
 		s = s.replaceAll(" - ", "");
 		s = s.trim();

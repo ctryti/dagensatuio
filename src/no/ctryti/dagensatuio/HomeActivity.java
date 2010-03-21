@@ -34,19 +34,18 @@ public class HomeActivity extends Activity {
 		
 		mDbAdapter = new DatabaseAdapter(this); 
 		
-//		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kaf\u00e9");
 		ArrayList<DinnerItem> items = mDbAdapter.getItems("Frederikke kaf\u00e9", null);
 		
 		TextView top_tv = (TextView)findViewById(R.id.home_top);
 		
-		//top_tv.setText(items.get(0).getPeriod());
+		top_tv.setText(items.get(0).getPeriod());
 		
 		System.out.println("Items:");
 		for(DinnerItem item : items)
 			Log.i(TAG, item.getDescription());
 		
 		ListView list = (ListView)findViewById(R.id.home_list);
-	
+		
 		if(list != null) {
 			DinnerItemAdapter adapter = new DinnerItemAdapter(this, R.layout.custom_list_row, items);
 			list.setAdapter(adapter);
