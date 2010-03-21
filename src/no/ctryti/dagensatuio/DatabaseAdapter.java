@@ -3,6 +3,7 @@ package no.ctryti.dagensatuio;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.R.string;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -28,11 +29,28 @@ public class DatabaseAdapter {
 	public static final String YEAR = "year";
 	public static final String GLUTEN = "has_gluten";
 	public static final String LAKTOSE = "has_laktose";
-	public static final String ROWID = "_id";
+	public static final String _ID = "_id";
 
+	private static final HashMap<String, String> columnMap;
+	static {
+		
+		//builder.setTables(DISH+" JOIN "+PLACE+" ON "+DISH+"."+PLACE+" = "+PLACE+"._id JOIN "+TYPE+" ON "+DISH+"."+TYPE+" = "+ TYPE+"._id JOIN "+DAY+" ON "+DISH+"."+DAY+" = "+DAY+"._id");
+		
+		//String query = "SELECT " + PLACE+"."+PLACE+", "+DAY+"."+DAY+", "+TYPE+"."+TYPE+", "+DISH+"."+DESC+", "+DISH+"."+PERIOD+" FROM "+DISH+" JOIN "+PLACE+" ON "+DISH+"."+PLACE+" = "+PLACE+"._id JOIN "+TYPE+" ON "+DISH+"."+TYPE+" = "+ TYPE+"._id JOIN "+DAY+" ON "+DISH+"."+DAY+" = "+DAY+"._id WHERE "+PLACE+"."+PLACE+"='"+place+"'";
+
+		columnMap = new HashMap<String, String>();
+		columnMap.put(PLACE, PLACE+"."+PLACE);
+		columnMap.put(DAY, DAY+"."+DAY);
+		columnMap.put(TYPE, TYPE+"."+TYPE);
+		columnMap.put(DESC, DISH+"."+DESC);
+		columnMap.put(PERIOD, DISH+"."+PERIOD);
+	}
+	
+	
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
 	private Context mCtx;
+	private String[] days;
 	
 	private static class DatabaseHelper extends SQLiteOpenHelper {
 		
@@ -43,7 +61,7 @@ public class DatabaseAdapter {
 		private static final String CREATE_TABLE_PLACES =
 			"create table " + PLACE + " (\n" +
 			"\t_id integer primary key autoincrement, \n" +
-			"\t"+PLACE + " text not null unique\n" +
+			"\t"+PLACE+" text not null unique\n" +
 			");";
 		private static final String CREATE_TABLE_DAY =
 			"create table " + DAY + "(\n" +
@@ -55,11 +73,6 @@ public class DatabaseAdapter {
 			"\t_id integer primary key autoincrement, \n" +
 			"\t"+TYPE + " text not null unique\n" +
 			");";
-		private static final String CREATE_TABLE_PERIOD =
-			"create table " + PERIOD + "(\n" +
-			"\t_id integer primary key autoincrement, \n" +
-			"\t"
-			;
 		private static final String CREATE_TABLE_DISH =
 			"create table " + DISH + "(\n" +
 			"\t_id integer primary key autoincrement, \n" +
@@ -67,7 +80,7 @@ public class DatabaseAdapter {
 			"\t"+PLACE  + " integer not null, \n" +
 			"\t"+DAY    + " integer not null, \n" +
 			"\t"+TYPE   + " integer not null, \n" +
-			"\t"+PERIOD   + " integer not null, \n" +
+			"\t"+PERIOD + " integer not null, \n" +
 			"\t"+GLUTEN + " integer not null, \n" +
 			"\t"+LAKTOSE+ " integer not null, \n" +
 			"\tforeign key (" + PLACE + ") REFERENCES " + PLACE + ", \n" + //"(_id)," +
@@ -89,7 +102,7 @@ public class DatabaseAdapter {
 				db.execSQL(CREATE_TABLE_TYPE); 
 				db.execSQL(CREATE_TABLE_DISH);
 			} catch(Exception e) {
-				Log.e(TAG, "Something happend!:: "+e.getMessage());
+				Log.e(TAG, e.getMessage());
 			}
 		}
 
@@ -120,6 +133,7 @@ public class DatabaseAdapter {
 
 	public DatabaseAdapter(Context ctx) {
 		mCtx = ctx;
+		days = mCtx.getResources().getStringArray(R.array.weekdays);
 	}
 
 	public DatabaseAdapter open() throws SQLException {
@@ -139,7 +153,7 @@ public class DatabaseAdapter {
 	}	
 
 	public Cursor fetchAllPlaces() {
-		return mDb.query(PLACE, new String[] {ROWID, PLACE}, null, null, null, null, null);
+		return mDb.query(PLACE, new String[] {_ID, PLACE}, null, null, null, null, null);
 	}
 	
 	public long insert(ContentValues values) {
@@ -172,7 +186,7 @@ public class DatabaseAdapter {
 		typeId = insertMinorValue(TYPE, cv);
 
 		cv.clear();
-		cv.put(DAY, values.getAsString(DAY));
+		cv.put(DAY, days[values.getAsInteger(DAY)-2]);
 		dayId = insertMinorValue(DAY, cv);
 
 		cv.clear();
@@ -195,7 +209,7 @@ public class DatabaseAdapter {
 
 	private long insertMinorValue(String key, ContentValues v) {
 		long rowId;
-		Cursor c = mDb.query(true, key, new String[] {ROWID, key }, key + "='"+v.getAsString(key)+"'", null, null, null, null, null);
+		Cursor c = mDb.query(true, key, new String[] {_ID, key }, key + "='"+v.getAsString(key)+"'", null, null, null, null, null);
 
 		if(c != null && c.getCount() > 0) {
 			c.moveToFirst();
@@ -203,7 +217,7 @@ public class DatabaseAdapter {
 			c.close();
 			return mDb.insert(key, null, v);
 		}
-		rowId = c.getInt(c.getColumnIndex(ROWID));
+		rowId = c.getInt(c.getColumnIndex(_ID));
 		c.close();
 		return rowId;
 	}
@@ -212,7 +226,15 @@ public class DatabaseAdapter {
 		
 		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 		
-		builder.setTables(DISH+" JOIN "+PLACE+" ON "+DISH+"."+PLACE+" = "+PLACE+"._id JOIN "+TYPE+" ON "+DISH+"."+TYPE+" = "+ TYPE+"._id JOIN "+DAY+" ON "+DISH+"."+DAY+" = "+DAY+"._id");
+		//builder.setTables(DISH+" JOIN "+PLACE+" ON "+DISH+"."+PLACE+" = "+PLACE+"._id JOIN "+TYPE+" ON "+DISH+"."+TYPE+" = "+ TYPE+"._id JOIN "+DAY+" ON "+DISH+"."+DAY+" = "+DAY+"._id");
+		
+		builder.setProjectionMap(columnMap);
+		builder.setTables(DISH+","+TYPE+" ,"+DAY+","+PLACE);
+		
+		if(place != null)
+			builder.appendWhere(columnMap.get(PLACE)+"='"+place+"'");
+		
+		builder.appendWhere();
 		
 		Cursor c = builder.query(mDbHelper.getReadableDatabase(),null,null, null,null,null,null);
 		
@@ -220,12 +242,12 @@ public class DatabaseAdapter {
 		DinnerItem item;
 		
 		if(c.moveToFirst()) {
-			String desc, day, period, type;
-			
+			String desc, period, type;
+			int day;
 			do {
 				desc = c.getString(3);
 				period = c.getString(4);
-				day = c.getString(1);
+				day = c.getInt(1);
 				type = c.getString(2);
 				
 				item = new DinnerItem(place, day, type, desc, period, false, false);
@@ -249,12 +271,12 @@ public class DatabaseAdapter {
 		DinnerItem item;
 		
 		if(c.moveToFirst()) {
-			String desc, day, period, type;
-			
+			String desc, period, type;
+			int day;
 			do {
 				desc = c.getString(3);
 				period = c.getString(4);
-				day = c.getString(1);
+				day = c.getInt(1);
 				type = c.getString(2);
 				
 				item = new DinnerItem(place, day, type, desc, period, false, false);

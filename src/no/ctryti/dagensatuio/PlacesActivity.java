@@ -160,16 +160,16 @@ public class PlacesActivity extends ListActivity {
 				ContentValues v = new ContentValues();
 				for (DinnerItem t : dinnerItems) {
 					v.clear();
-					v.put(DatabaseAdapter.DAY, t.getDay());
-					v.put(DatabaseAdapter.DESC, t.getDescription());
-					v.put(DatabaseAdapter.PLACE, t.getPlace());
-					v.put(DatabaseAdapter.TYPE, t.getType());
-					v.put(DatabaseAdapter.PERIOD, t.getPeriod());
-					int gluten = t.isGluten() ? 1 : 0;
-					int laktose = t.isLaktose() ? 1 : 0;
-					v.put(DatabaseAdapter.GLUTEN, gluten);
-					v.put(DatabaseAdapter.LAKTOSE, laktose);
-					mDbAdapter.insert(v);
+//					v.put(DatabaseAdapter.DAY, t.getDay());
+//					v.put(DatabaseAdapter.DESC, t.getDescription());
+//					v.put(DatabaseAdapter.PLACE, t.getPlace());
+//					v.put(DatabaseAdapter.TYPE, t.getType());
+//					v.put(DatabaseAdapter.PERIOD, t.getPeriod());
+//					int gluten = t.isGluten() ? 1 : 0;
+//					int laktose = t.isLaktose() ? 1 : 0;
+//					v.put(DatabaseAdapter.GLUTEN, gluten);
+//					v.put(DatabaseAdapter.LAKTOSE, laktose);
+//					mDbAdapter.insert(v);
 
 				}
 				Log.i(TAG, "Finished adding " + place.getName());

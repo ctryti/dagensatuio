@@ -1,14 +1,12 @@
 package no.ctryti.dagensatuio;
 
-import java.util.Calendar;
 
 
 public class DinnerItem {
 	
 	private String  place;
-	private String  day;
+	private int     day;
 	private Type    type;
-	private Calendar date;
 	private String  description;
 	private String  period;
 	private boolean gluten;
@@ -18,11 +16,11 @@ public class DinnerItem {
 		DAGENS, VEGETAR, HALAL, MMM, SUPPE, OPTIMA;
 	}
 
-	public DinnerItem(String place, String day, String type, String description, String period, boolean gluten, boolean laktose) {
+	public DinnerItem(String place, int day, String type, String description, String period, boolean gluten, boolean laktose) {
 		this(place, day, Type.valueOf(type), description, period, gluten, laktose);
 	}
 	
-	public DinnerItem(String place, String day, Type type, String description, String period, boolean gluten, boolean laktose) {
+	public DinnerItem(String place, int day, Type type, String description, String period, boolean gluten, boolean laktose) {
 		this.place = place;
 		this.day = day;
 		this.type = type;
@@ -40,11 +38,11 @@ public class DinnerItem {
 		this.place = place;
 	}
 
-	public String getDay() {
+	public int getDay() {
 		return day;
 	}
 
-	public void setDay(String day) {
+	public void setDay(int day) {
 		this.day = day;
 	}
 

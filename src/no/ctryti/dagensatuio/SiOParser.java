@@ -1,11 +1,16 @@
 package no.ctryti.dagensatuio;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Scanner;
+
+//import android.util.Log;
 
 public class SiOParser {
 	
@@ -23,21 +28,21 @@ public class SiOParser {
 		"&&"
 	};
 	
-	private static HashMap<String, Integer> months;
+	private static HashMap<String, Integer> calConstants;
 	static {
-		months = new HashMap<String, Integer>();
-		months.put("januar", Calendar.JANUARY);
-		months.put("februar", Calendar.FEBRUARY);
-		months.put("mars", Calendar.MARCH);
-		months.put("april", Calendar.APRIL);
-		months.put("mai", Calendar.MAY);
-		months.put("juni", Calendar.JUNE);
-		months.put("juli", Calendar.JULY);
-		months.put("august", Calendar.AUGUST);
-		months.put("september", Calendar.SEPTEMBER);
-		months.put("oktober", Calendar.OCTOBER);
-		months.put("november", Calendar.NOVEMBER);
-		months.put("desember", Calendar.DECEMBER);
+		calConstants = new HashMap<String, Integer>();
+		calConstants.put("januar", Calendar.JANUARY);
+		calConstants.put("februar", Calendar.FEBRUARY);
+		calConstants.put("mars", Calendar.MARCH);
+		calConstants.put("april", Calendar.APRIL);
+		calConstants.put("mai", Calendar.MAY);
+		calConstants.put("juni", Calendar.JUNE);
+		calConstants.put("juli", Calendar.JULY);
+		calConstants.put("august", Calendar.AUGUST);
+		calConstants.put("september", Calendar.SEPTEMBER);
+		calConstants.put("oktober", Calendar.OCTOBER);
+		calConstants.put("november", Calendar.NOVEMBER);
+		calConstants.put("desember", Calendar.DECEMBER);
 	}
 	
 	
@@ -45,16 +50,17 @@ public class SiOParser {
 	private static Scanner sc;
 	private static String place;
 	private static String period;
-	
+	private static Calendar date;
 
 	
 	/* used for testing! */
 //	public static void main(String[] args) {
 //		ArrayList<DinnerItem> items;
 //		try {
-//			items = parse(new FileInputStream(new File("./frederikke+kafe")), "Frederikke kaf√©");
+//			items = parse(new FileInputStream(new File("./kafe+helga")), "Kafe Helga");
 //			for(DinnerItem item : items) {
-//				System.out.print(item.getDay());
+//				System.out.print(item.getPeriod());
+//				System.out.print(" - "+item.getDay());
 //				System.out.print(" - "+item.getType());
 //				System.out.print(" - "+item.getDescription());
 //				System.out.println();
@@ -101,19 +107,35 @@ public class SiOParser {
 		 */
 		treatedContent = treatedContent.replace("* = Uten", END_OF_MENU);
 
+		
 		sc = new Scanner(treatedContent);
-
+		
 		/*
 		 * Scan to the token "Uke" and save the following string until "Mandag"
 		 * as the period
 		 */
+		
+		String lastDay = "";
+		String month = "";
+
+		date = new GregorianCalendar();
+				
 		while (sc.hasNext()) {
 			curToken = sc.next();
 			if (curToken.equals("Uke")) {
-				//period = curToken + " ";
+				sc.next(); // skip week number
+				
+				//curToken = sc.next(); // should be NEW_LINE_TOKEN
+				curToken = sc.next(); // skip all NEW_LINE_TOKENS
+				while(curToken.equals(NEW_LINE_TOKEN))
+					curToken = sc.next();
+				
+				sc.next(); // skip '-'
+				lastDay = sc.next(); // get the end of the period
+				month = sc.next(); // get the month
 				while (sc.hasNext()) {
 					curToken = sc.next();
-					if (!curToken.equals(days[0])) {
+					if (!curToken.equals("Mandag")) {
 						period += curToken + " ";
 					} else {
 						break;
@@ -122,24 +144,17 @@ public class SiOParser {
 				break;
 			}
 		}
-
-		/* remove any NEW_LINE_TOKENS that got into the period string */
-		period = period.replaceAll(NEW_LINE_TOKEN, "");
-		//period = Calendar.getInstance().get(Calendar.YEAR) + " " + period;
 		
-		/* compact multiple whitespaces into 1 space */
-		period = period.replaceAll("\\s+", " ");
-		//Log.i(TAG, "Period: "+period);
-		
-		
-		
-		Calendar date = Calendar.getInstance();
-//		date.set(date.get(Calendar.YEAR), date.get(months.get()), day)
+		lastDay = lastDay.replace(".", "");
+		date.setMinimalDaysInFirstWeek(3); // European way of counting weeks.
+		System.out.println(month);
+		date.set(date.get(Calendar.YEAR), date.get(calConstants.get(month.toLowerCase())), Integer.parseInt(lastDay));
+		period = date.get(Calendar.YEAR)+""+date.get(Calendar.WEEK_OF_YEAR);
 		
 		/* The current token should now be "Mandag" */
-		for (int i = 0; i < 5; i++) {
+		for (int i = Calendar.MONDAY; i <= Calendar.FRIDAY; i++) {
 			/* Frederikke Kafe is a special case, with extra shit html */
-			if (place.equals("Frederikke kafÈ")) {
+			if (place.equals("Frederikke kaf\u00e9")) {
 				menuEntries.addAll(Arrays.asList(parseFrederikke(i)));
 			} else if(place.equals("SV Kafeen")) {
 				menuEntries.addAll(Arrays.asList(parseSV(i)));
@@ -151,11 +166,11 @@ public class SiOParser {
 		return menuEntries;
 	}
 
-	private static DinnerItem[] parseSV(int num) {
+	private static DinnerItem[] parseSV(int day) {
 		DinnerItem[] items = new DinnerItem[3];
 
 		for (int i = 0; i < items.length; i++)
-			items[i] = new DinnerItem(place, days[num], (DinnerItem.Type)null, null, period, false, false);
+			items[i] = new DinnerItem(place, day, (DinnerItem.Type)null, null, period, false, false);
 
 		items[0].setType(DinnerItem.Type.DAGENS);
 		items[1].setType(DinnerItem.Type.VEGETAR);
@@ -206,11 +221,11 @@ public class SiOParser {
 		return items;
 	}
 	
-	private static DinnerItem[] parseFrederikke(int num) {
+	private static DinnerItem[] parseFrederikke(int day) {
 		DinnerItem[] items = new DinnerItem[6];
 
 		for (int i = 0; i < items.length; i++)
-			items[i] = new DinnerItem(place, days[num], (DinnerItem.Type)null, null, period, false, false);
+			items[i] = new DinnerItem(place, day, (DinnerItem.Type)null, null, period, false, false);
 
 		items[0].setType(DinnerItem.Type.DAGENS);
 		items[1].setType(DinnerItem.Type.VEGETAR);
@@ -285,19 +300,19 @@ public class SiOParser {
 		}
 	}
 	
-	private static DinnerItem parseNormal(int num) {
+	private static DinnerItem parseNormal(int day) {
 		String description = "";
 		boolean gluten = false, laktose = false;
 		while (sc.hasNext()) {
 			curToken = sc.next();
-			if (!curToken.equals(days[num + 1])) {
+			if (!curToken.equals(days[day - 1])) {
 				description += curToken + " ";
 			} else {
 				break;
 			}
 		}
 		description = cleanUpString(description.replaceAll(NEW_LINE_TOKEN + "\\s*", ""));
-		return new DinnerItem(place, days[num], DinnerItem.Type.DAGENS, description, period, gluten, laktose);
+		return new DinnerItem(place, day, DinnerItem.Type.DAGENS, description, period, gluten, laktose);
 	}
 
 	private static String cleanUpString(String s) {

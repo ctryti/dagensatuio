@@ -34,11 +34,11 @@ public class HomeActivity extends Activity {
 		
 		mDbAdapter = new DatabaseAdapter(this); 
 		
-		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kafé");
+		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kaf\u00e9");
 		
 		TextView top_tv = (TextView)findViewById(R.id.home_top);
 		
-		top_tv.setText(items.get(0).getPeriod());
+		//top_tv.setText(items.get(0).getPeriod());
 		
 		System.out.println("Items:");
 		for(DinnerItem item : items)

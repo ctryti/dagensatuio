@@ -4,16 +4,10 @@
 	<string name="app_name">Dagens@UiO</string>
 	
 	<string-array name="weekdays">
-		<!--
-			There are 3 fridays because ctryti saw no point in showing saturday
-			and sunday = hack
-		-->
-		<item>Fredag</item>
 		<item>Mandag</item>
 		<item>Tirsdag</item>
 		<item>Onsdag</item>
 		<item>Torsdag</item>
-		<item>Fredag</item>
 		<item>Fredag</item>
 	</string-array>
 	
