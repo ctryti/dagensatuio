@@ -34,7 +34,8 @@ public class HomeActivity extends Activity {
 		
 		mDbAdapter = new DatabaseAdapter(this); 
 		
-		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kaf\u00e9");
+//		ArrayList<DinnerItem> items = mDbAdapter.getAllFromPlace("Frederikke kaf\u00e9");
+		ArrayList<DinnerItem> items = mDbAdapter.getItems("Frederikke kaf\u00e9", null);
 		
 		TextView top_tv = (TextView)findViewById(R.id.home_top);
 		

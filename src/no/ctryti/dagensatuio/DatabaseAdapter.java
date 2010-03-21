@@ -44,6 +44,8 @@ public class DatabaseAdapter {
 		columnMap.put(TYPE, TYPE+"."+TYPE);
 		columnMap.put(DESC, DISH+"."+DESC);
 		columnMap.put(PERIOD, DISH+"."+PERIOD);
+		columnMap.put(GLUTEN, DISH+"."+GLUTEN);
+		columnMap.put(LAKTOSE, DISH+"."+LAKTOSE);
 	}
 	
 	
@@ -124,6 +126,10 @@ public class DatabaseAdapter {
 			}
 		}
 
+		
+		//03-21 16:49:17.268: ERROR/AndroidRuntime(866): Caused by: android.database.sqlite.SQLiteException: near "dish": syntax error: , while compiling: SELECT place.place, day.day, type.type, dish.desc, dish.period, dish.has_gluten, dish.has_laktose FROM dish,type ,day,place WHERE (place.place='Frederikke kafé'dish.period=201011day.day=dish.daytype.type=dish.type)
+
+		
 		private void reCreateDatabase(SQLiteDatabase db) {
 			Log.i(TAG, "Re-creating the database (version " + DATABASE_VERSION + ")");
 			dropStatements(db);
@@ -222,35 +228,65 @@ public class DatabaseAdapter {
 		return rowId;
 	}
 	
-	public ArrayList<DinnerItem> getItems(String place) {
+	private String mostRecentPeriod() {
+		
+		Cursor c = mDb.query(true, DISH, new String[] {PERIOD }, null, null, null, null, PERIOD, "1");
+		if(c != null && c.getCount() > 0)
+			c.moveToFirst();
+		else 
+			return "";
+		
+		String period = c.getString(c.getColumnIndex(PERIOD));
+		return period;
+	}
+	
+	public ArrayList<DinnerItem> getItems(String place, String period) {
 		
 		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 		
 		//builder.setTables(DISH+" JOIN "+PLACE+" ON "+DISH+"."+PLACE+" = "+PLACE+"._id JOIN "+TYPE+" ON "+DISH+"."+TYPE+" = "+ TYPE+"._id JOIN "+DAY+" ON "+DISH+"."+DAY+" = "+DAY+"._id");
 		
+		open();
+		
 		builder.setProjectionMap(columnMap);
-		builder.setTables(DISH+","+TYPE+" ,"+DAY+","+PLACE);
+		builder.setTables(DISH+","+TYPE+","+DAY+","+PLACE);
 		
+		builder.appendWhere(DAY+"."+_ID+"="+DISH+"."+DAY);
+		builder.appendWhere(" AND "+TYPE+"."+_ID+"="+DISH+"."+TYPE);
+
 		if(place != null)
-			builder.appendWhere(columnMap.get(PLACE)+"='"+place+"'");
+			builder.appendWhere(" AND "+columnMap.get(PLACE)+"='"+place+"' AND "+DISH+"."+PLACE + "="+PLACE+"."+_ID);
 		
-		builder.appendWhere();
+		if(period != null)
+			builder.appendWhere(" AND "+DISH+"."+PERIOD+"="+period);
+		else
+			builder.appendWhere(" AND "+DISH+"."+PERIOD+"="+mostRecentPeriod());
 		
-		Cursor c = builder.query(mDbHelper.getReadableDatabase(),null,null, null,null,null,null);
+		Cursor c = builder.query(mDbHelper.getReadableDatabase(),new String[]{ PLACE, DAY, TYPE, DESC, PERIOD, GLUTEN, LAKTOSE },null,null,null,null,null);
 		
+		System.out.println(builder.buildQuery(new String[]{ PLACE, DAY, TYPE, DESC, PERIOD, GLUTEN, LAKTOSE },null,null,null,null,null, null));
 		ArrayList<DinnerItem> list = new ArrayList<DinnerItem>();
 		DinnerItem item;
 		
+		String a[] = c.getColumnNames();
+		
+		for(String s : a)
+			System.out.println(s);
+		
+		
 		if(c.moveToFirst()) {
-			String desc, period, type;
+			String desc, type;
+			boolean laktose, gluten;
 			int day;
 			do {
-				desc = c.getString(3);
-				period = c.getString(4);
-				day = c.getInt(1);
-				type = c.getString(2);
-				
-				item = new DinnerItem(place, day, type, desc, period, false, false);
+				desc = c.getString(c.getColumnIndex(DESC));
+				period = c.getString(c.getColumnIndex(PERIOD));
+				day = c.getInt(c.getColumnIndex(DAY));
+				type = c.getString(c.getColumnIndex(TYPE));
+				laktose = c.getString(c.getColumnIndex(LAKTOSE)).equals("1") ? true : false;
+				gluten = c.getString(c.getColumnIndex(GLUTEN)).equals("1") ? true : false;
+
+				item = new DinnerItem(place, day, type, desc, period, gluten, laktose);
 				list.add(item);
 				
 			} while(c.moveToNext());
