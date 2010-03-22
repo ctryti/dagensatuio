@@ -4,14 +4,20 @@
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content" >
 	
+<!--	<TextView android:id="@+id/daylabel"-->
+<!--		android:layout_width="wrap_content"-->
+<!--		android:layout_height="wrap_content"-->
+<!--		android:layout_alignParentTop="true" />-->
+<!--		android:layout_below="@id/daylabel"--><!--		android:layout_below="@id/daylabel"-->	
 	<TextView android:id="@+id/type"
+
 		android:textSize="5pt"
 		android:paddingTop="5px"
 		android:layout_marginLeft="10px"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"/>
 		
-	<TextView android:id="@+id/desc" 
+	<TextView android:id="@+id/desc"
 		android:layout_below="@id/type"
 		android:textSize="6pt"
 		android:layout_marginLeft="20px"

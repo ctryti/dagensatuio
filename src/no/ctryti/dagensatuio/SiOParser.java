@@ -150,7 +150,7 @@ public abstract class SiOParser extends Context {
 		/* The current token should now be "Mandag" */
 		for (int i = Calendar.MONDAY; i <= Calendar.FRIDAY; i++) {
 			/* Frederikke Kafe is a special case, with extra shit html */
-			if (place.equals("Frederikke kafé")) {
+			if (place.equals("Frederikke kaf\u00e9")) {
 				menuEntries.addAll(Arrays.asList(parseFrederikke(i)));
 			} else if(place.equals("SV Kafeen")) {
 				menuEntries.addAll(Arrays.asList(parseSV(i)));

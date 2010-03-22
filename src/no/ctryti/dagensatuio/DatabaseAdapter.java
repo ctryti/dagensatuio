@@ -34,7 +34,7 @@ public class DatabaseAdapter {
 	static {
 		columnMap = new HashMap<String, String>();
 		columnMap.put(PLACE, PLACE+"."+PLACE);
-		columnMap.put(DAY, DAY+"."+DAY);
+		columnMap.put(DAY, DISH+"."+DAY);
 		columnMap.put(TYPE, TYPE+"."+TYPE);
 		columnMap.put(DESC, DISH+"."+DESC);
 		columnMap.put(PERIOD, DISH+"."+PERIOD);
@@ -249,10 +249,6 @@ public class DatabaseAdapter {
 		builder.appendWhere(DAY+"."+_ID+"="+DISH+"."+DAY);
 		builder.appendWhere(" AND "+TYPE+"."+_ID+"="+DISH+"."+TYPE);
 
-		//SELECT place.place, day.day, type.type, dish.desc, dish.period, dish.has_gluten, dish.has_laktose FROM dish,type,day,place WHERE ((day._id=dish.day AND type._id=dish.type AND dish.period='201012' AND place.place='Frederikke kafÃ©' AND dish.place=place._id)
-		//SELECT place.place, day.day, type.type, dish.desc, dish.period, dish.has_gluten, dish.has_laktose FROM dish,type,day,place WHERE (day._id=dish.day AND type._id=dish.type AND dish.period='201012' AND place.place='Frederikke kafÃ©' AND dish.place=place._id))
-
-		
 		if(period != null) {
 			builder.appendWhere(" AND "+DISH+"."+PERIOD+"='"+period+"'");
 		} else {
@@ -264,7 +260,6 @@ public class DatabaseAdapter {
 		if(place != null)
 			builder.appendWhere(" AND "+columnMap.get(PLACE)+"='"+place+"' AND "+DISH+"."+PLACE + "="+PLACE+"."+_ID);
 	
-		//System.out.println(builder.buildQuery(new String[]{ PLACE, DAY, TYPE, DESC, PERIOD, GLUTEN, LAKTOSE },null,null,null,null,null,null));
 		Cursor c = builder.query(mDb,new String[]{ PLACE, DAY, TYPE, DESC, PERIOD, GLUTEN, LAKTOSE },null,null,null,null,null);
 		
 		ArrayList<DinnerItem> list = new ArrayList<DinnerItem>();
@@ -285,6 +280,7 @@ public class DatabaseAdapter {
 
 				item = new DinnerItem(place, day, type, desc, period, gluten, laktose);
 				list.add(item);
+				System.out.println(item.getDay());
 				
 			} while(c.moveToNext());
 		}
