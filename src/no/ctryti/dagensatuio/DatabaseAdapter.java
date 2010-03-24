@@ -234,6 +234,7 @@ public class DatabaseAdapter {
 			return null;
 		
 		String period = c.getString(c.getColumnIndex(PERIOD));
+		c.close();
 		return period;
 	}
 	
@@ -280,8 +281,6 @@ public class DatabaseAdapter {
 
 				item = new DinnerItem(place, day, type, desc, period, gluten, laktose);
 				list.add(item);
-				System.out.println(item.getDay());
-				
 			} while(c.moveToNext());
 		}
 

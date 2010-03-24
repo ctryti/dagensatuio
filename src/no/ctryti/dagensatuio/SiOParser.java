@@ -28,9 +28,6 @@ public abstract class SiOParser extends Context {
 		"&&"
 	};
 	
-	
-	
-	
 	private static HashMap<String, Integer> calConstants;
 	static {
 		calConstants = new HashMap<String, Integer>();
