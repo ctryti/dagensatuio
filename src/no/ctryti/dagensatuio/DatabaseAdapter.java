@@ -195,13 +195,14 @@ public class DatabaseAdapter {
 		cv.put(GLUTEN, values.getAsInteger(GLUTEN));
 		cv.put(LAKTOSE, values.getAsInteger(LAKTOSE));
 		cv.put(PERIOD, values.getAsString(PERIOD));
-				
-		long rowId = mDb.insert(DISH, null, cv);
-		if(rowId == -1) 
-			Log.e(TAG, "Failed to insert: " + values.getAsString(PLACE)+", "+ values.getAsString(PERIOD)+ "," +values.getAsString(DAY) + ", " + values.getAsString(TYPE) + "," + values.getAsString(DESC));
-		else	
+		
+		long rowId = -1;
+		try {
+			rowId = mDb.insertOrThrow(DISH, null, cv);
 			Log.i(TAG, "Insert: " + values.getAsString(PLACE)+", "+ values.getAsString(PERIOD)+ "," +values.getAsString(DAY) + ", " + values.getAsString(TYPE) + ", "+values.getAsString(DESC));
-
+		} catch(SQLException e) {
+			Log.e(TAG, e.getMessage() +": "+ values.getAsString(PLACE)+", "+ values.getAsString(PERIOD)+ "," +values.getAsString(DAY) + ", " + values.getAsString(TYPE) + "," + values.getAsString(DESC));
+		}
 		return rowId;
 	}
 

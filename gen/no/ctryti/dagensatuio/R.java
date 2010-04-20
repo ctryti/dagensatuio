@@ -17,8 +17,9 @@ public final class R {
     public static final class drawable {
         public static final int background_bitmap=0x7f020000;
         public static final int background_hvga=0x7f020001;
-        public static final int choose_place=0x7f020002;
-        public static final int refresh=0x7f020003;
+        public static final int background_wvga=0x7f020002;
+        public static final int choose_place=0x7f020003;
+        public static final int refresh=0x7f020004;
     }
     public static final class id {
         public static final int day_text=0x7f070002;

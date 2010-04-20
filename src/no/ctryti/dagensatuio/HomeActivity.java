@@ -76,7 +76,6 @@ public class HomeActivity extends Activity {
 			 /*Grid of days */
 			GridView days = (GridView) findViewById(R.id.days_list);
 			days.setAdapter(new ImageAdapter(this, R.layout.days_item, Arrays.asList(weekdays)));
-			
 		}
 	}
 
