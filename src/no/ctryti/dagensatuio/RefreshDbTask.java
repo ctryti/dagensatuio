@@ -18,6 +18,7 @@ public class RefreshDbTask extends AsyncTask<Void, Integer, Void>  {
 	private static final String TAG = "RefreshDBTask";
 
 	private DatabaseAdapter mDbAdapter;
+	public boolean busy = false;
 	
 	public RefreshDbTask(DatabaseAdapter dbAdapter) {
 		mDbAdapter = dbAdapter;
@@ -25,17 +26,18 @@ public class RefreshDbTask extends AsyncTask<Void, Integer, Void>  {
 	
 	@Override
 	protected void onPreExecute() {
+		busy = true;
 		mDbAdapter.open();
 	}
 
 	@Override
 	protected void onPostExecute(Void result) {
 		mDbAdapter.close();
+		busy = false;
 	}
 
 	@Override
 	protected void onProgressUpdate(Integer... values) {
-	
 	}
 
 	@Override
@@ -76,7 +78,6 @@ public class RefreshDbTask extends AsyncTask<Void, Integer, Void>  {
 
 			}
 			Log.i(TAG, "Finished adding " + place.getName());
-					
 		}
 		return null;
 	}

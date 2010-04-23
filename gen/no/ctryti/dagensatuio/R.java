@@ -15,11 +15,16 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int background_bitmap=0x7f020000;
-        public static final int background_hvga=0x7f020001;
-        public static final int background_wvga=0x7f020002;
-        public static final int choose_place=0x7f020003;
-        public static final int refresh=0x7f020004;
+        public static final int background=0x7f020000;
+        public static final int background_bitmap=0x7f020001;
+        public static final int background_hvga=0x7f020002;
+        public static final int background_wvga=0x7f020003;
+        public static final int bg_repeat=0x7f020004;
+        public static final int bg_shape_drawable=0x7f020005;
+        public static final int choose_place=0x7f020006;
+        public static final int dagens_tag=0x7f020007;
+        public static final int patch_bg=0x7f020008;
+        public static final int refresh=0x7f020009;
     }
     public static final class id {
         public static final int day_text=0x7f070002;

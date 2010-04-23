@@ -11,6 +11,7 @@ import java.util.Map;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +29,8 @@ public class HomeActivity extends Activity {
 	private static final int CLEAR_DB_ID = 2;
 	private static final String TAG = "HomeActivity";
 	
+	private RefreshDbTask mRefreshDbTask;
+	
 	private String months[], weekdays[];
 	private DatabaseAdapter mDbAdapter;
 	
@@ -38,6 +41,7 @@ public class HomeActivity extends Activity {
 		mDbAdapter = new DatabaseAdapter(this); 
 		
 		setContentView(R.layout.home_activity);
+		
 		
 		ArrayList<DinnerItem> items = mDbAdapter.getItems("Frederikke kaf\u00e9", null);
 		
@@ -79,49 +83,6 @@ public class HomeActivity extends Activity {
 		}
 	}
 
-	protected class ImageAdapter extends BaseAdapter {
-		private Context mCtx;
-		private int mRowResID;
-		private List<String> mList;
-
-		public ImageAdapter(Context ctx, int rowResID, List<String> list){
-			this.mCtx = ctx;
-			this.mRowResID = rowResID;
-			this.mList = list;
-		}
-
-		@Override
-		public int getCount() {
-			return mList.size();
-		}
-
-		@Override
-		public Object getItem(int arg0) {
-			return mList.get(arg0);
-		}
-
-		@Override
-		public long getItemId(int arg0) {
-			return arg0;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View v;
-			String day = mList.get(position);
-			if(convertView==null){
-				v = View.inflate(mCtx, R.layout.days_item, null);
-				TextView txt = (TextView) v.findViewById(R.id.day_text);
-				txt.setText(day);
-				//b1.setOnTouchListener(new ButtonListener(mCtx, day));
-
-			} else {
-				v = convertView;
-			}
-			return v;
-		}
-
-	}
 	
 	private String createPeriodString(String period) {
 		
@@ -139,8 +100,31 @@ public class HomeActivity extends Activity {
 		return "Uke "+week+": "+(cal.get(Calendar.DAY_OF_MONTH)-4)+". - "+cal.get(Calendar.DAY_OF_MONTH)+". "+month;
 	}
 
-	/* props to Jeff Sharkey (http://jsharkey.org/blog/2008/08/18/separating-lists-with-headers-in-android-09/)
-	 * for this adapter */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(Menu.NONE, REFRESH_ID, Menu.NONE, "Refresh");
+		menu.add(Menu.NONE, CLEAR_DB_ID, Menu.NONE, "Clear database");
+		return true;
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+
+		case REFRESH_ID:
+			mRefreshDbTask = new RefreshDbTask(mDbAdapter);
+			mRefreshDbTask.execute();
+			
+			break;
+		case CLEAR_DB_ID:
+			mDbAdapter.reCreateDatabase();
+			break;
+		}
+		return true;
+	}
+	
+	/* props to Jeff Sharkey (http://jsharkey.org/blog/2008/08/18/separating-lists-with-headers-in-android-09/) for this adapter */
 	public class SeparatedListAdapter extends BaseAdapter {
 
 		public final Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();
@@ -236,6 +220,49 @@ public class HomeActivity extends Activity {
 			return position;
 		}
 	}
+	protected class ImageAdapter extends BaseAdapter {
+		private Context mCtx;
+		private int mRowResID;
+		private List<String> mList;
+
+		public ImageAdapter(Context ctx, int rowResID, List<String> list){
+			this.mCtx = ctx;
+			this.mRowResID = rowResID;
+			this.mList = list;
+		}
+
+		@Override
+		public int getCount() {
+			return mList.size();
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			return mList.get(arg0);
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			return arg0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View v;
+			String day = mList.get(position);
+			if(convertView==null){
+				v = View.inflate(mCtx, R.layout.days_item, null);
+				TextView txt = (TextView) v.findViewById(R.id.day_text);
+				txt.setText(day);
+				//b1.setOnTouchListener(new ButtonListener(mCtx, day));
+
+			} else {
+				v = convertView;
+			}
+			return v;
+		}
+
+	}
 
 	private class DinnerItemAdapter extends BaseAdapter {
 
@@ -268,35 +295,11 @@ public class HomeActivity extends Activity {
 			} else {
 				holder = (ViewHolder)row.getTag();
 			}
-			//TextView type = (TextView)row.findViewById(R.id.type);
 			holder.getTypeView().setText(item.getType());
-			//TextView desc = (TextView)row.findViewById(R.id.desc);
 			holder.getDescView().setText(item.getDescription());
 			
 			return row;
 		}
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		menu.add(Menu.NONE, REFRESH_ID, Menu.NONE, "Refresh");
-		menu.add(Menu.NONE, CLEAR_DB_ID, Menu.NONE, "Clear database");
-		return true;
-	}
-
-	@Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		switch (item.getItemId()) {
-
-		case REFRESH_ID:
-			new RefreshDbTask(mDbAdapter).execute();
-			break;
-		case CLEAR_DB_ID:
-			mDbAdapter.reCreateDatabase();
-			break;
-		}
-		return true;
 	}
 	
 	class ViewHolder {
@@ -316,6 +319,9 @@ public class HomeActivity extends Activity {
 			if(desc == null)
 				desc = (TextView)base.findViewById(R.id.desc);
 			return desc;
+		}
+		public View getBase() {
+			return base;
 		}
 	}
 }
