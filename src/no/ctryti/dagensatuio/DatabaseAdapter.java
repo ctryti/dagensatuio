@@ -228,7 +228,7 @@ public class DatabaseAdapter {
 	
 	/* Finds the most recent period */
 	private String mostRecentPeriod() {
-		Cursor c = mDb.query(true, DISH, new String[] {PERIOD}, null, null, null, null, PERIOD, "1");
+		Cursor c = mDb.query(true, DISH, new String[] {PERIOD}, null, null, null, null, PERIOD+" DESC", "1");
 		if(c != null && c.getCount() > 0)
 			c.moveToFirst();
 		else 

@@ -10,8 +10,9 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -287,7 +289,7 @@ public class HomeActivity extends Activity {
 			DinnerItem item = mList.get(position);
 			View row = convertView; 
 			ViewHolder holder = null;
-			
+						
 			if(row == null) {	
 				row = View.inflate(mCtx, R.layout.custom_list_row, null);
 				holder = new ViewHolder(row);
@@ -298,17 +300,41 @@ public class HomeActivity extends Activity {
 			holder.getTypeView().setText(item.getType());
 			holder.getDescView().setText(item.getDescription());
 			
+//			GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+//					new int[]{0x4a8649, 0x68bc67});
+//			gd.setAlpha(255);
+			
+			/* set the rows color-tag */
+			if(item.getType().equals("DAGENS"))
+				holder.getColorView().setImageResource(R.drawable.blue_color_tag);
+			else if(item.getType().equals("VEGETAR"))
+				holder.getColorView().setImageResource(R.drawable.green_color_tag);
+			else if(item.getType().equals("HALAL"))
+				holder.getColorView().setImageResource(R.drawable.yellow_color_tag);
+			else if(item.getType().equals("MMM"))
+				holder.getColorView().setImageResource(R.drawable.red_color_tag);
+			else if(item.getType().equals("SUPPE"))
+				holder.getColorView().setImageResource(R.drawable.purple_color_tag);
+			
+						
 			return row;
 		}
 	}
 	
 	class ViewHolder {
 		View base;
+		ImageView color;
 		TextView type;
 		TextView desc;
-				
+						
 		ViewHolder(View base) {
 			this.base = base;
+		}
+		public ImageView getColorView() {
+			if(color == null) {
+				color = (ImageView)base.findViewById(R.id.dagens_color_tag);
+			}
+			return color;
 		}
 		public TextView getTypeView() {
 			if(type == null)

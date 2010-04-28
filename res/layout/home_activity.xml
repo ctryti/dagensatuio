@@ -21,6 +21,7 @@ android:orientation="vertical"-->
 		android:layout_alignParentLeft="true" android:layout_marginLeft="10px"
 		android:src="@drawable/refresh" />
 
+<!--sdf-->
 
 	<ImageButton android:id="@+id/right_button" style="@style/ButtonsTheme" 
 		android:layout_alignParentBottom="true"
