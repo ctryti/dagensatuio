@@ -1,7 +1,6 @@
 package no.ctryti.dagensatuio;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
@@ -9,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -43,9 +42,13 @@ public class HomeActivity extends Activity {
 		mDbAdapter = new DatabaseAdapter(this); 
 		
 		setContentView(R.layout.home_activity);
-		
-		
-		ArrayList<DinnerItem> items = mDbAdapter.getItems("Frederikke kaf\u00e9", null);
+		populateList("Frederikke kaf\u00e9");
+		ImageButton placesButton = (ImageButton) findViewById(R.id.right_button);
+		placesButton.setOnClickListener(new ButtonListener(this));
+	}
+
+	private void populateList(String placeName) {
+		ArrayList<DinnerItem> items = mDbAdapter.getItems(placeName, null);
 		
 		/* populate the screen! (if there is anything to display */
 		if(items.size() != 0) {
@@ -56,8 +59,6 @@ public class HomeActivity extends Activity {
 			SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 			
 			TextView top_tv = (TextView)findViewById(R.id.home_top);
-			
-			//RelativeLayout bottom_row = (RelativeLayout)findViewById(R.id.home_bottom);
 			TextView bottom_tv = (TextView)findViewById(R.id.middle_label);
 			
 			ListView list = (ListView)findViewById(R.id.home_list);
@@ -78,13 +79,11 @@ public class HomeActivity extends Activity {
 			
 			System.out.println(list);
 			list.setAdapter(adapter);
-		
-			 /*Grid of days */
-			GridView days = (GridView) findViewById(R.id.days_list);
-			days.setAdapter(new ImageAdapter(this, R.layout.days_item, Arrays.asList(weekdays)));
 		}
+			 /*Grid of days */
+//			GridView days = (GridView) findViewById(R.id.days_list);
+//			days.setAdapter(new ImageAdapter(this, R.layout.days_item, Arrays.asList(weekdays)));
 	}
-
 	
 	private String createPeriodString(String period) {
 		
@@ -102,6 +101,33 @@ public class HomeActivity extends Activity {
 		return "Uke "+week+": "+(cal.get(Calendar.DAY_OF_MONTH)-4)+". - "+cal.get(Calendar.DAY_OF_MONTH)+". "+month;
 	}
 
+	class ButtonListener implements android.view.View.OnClickListener {
+		private Context mCtx;
+
+		ButtonListener(Context ctx) {
+			mCtx = ctx;
+		}
+
+		@Override
+		public void onClick(View v) {
+			final AlertDialog.Builder placesDialog = new AlertDialog.Builder(mCtx);
+			String[] places = Settings.Place.getPlaces();
+
+			placesDialog.setTitle("Velg et sted");
+
+			placesDialog.setItems(places, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					populateList(Settings.Place.getPlaces()[which]);
+				}
+			});
+			AlertDialog al = placesDialog.create();
+			al.show();
+		}
+	}
+
+
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -299,10 +325,6 @@ public class HomeActivity extends Activity {
 			}
 			holder.getTypeView().setText(item.getType());
 			holder.getDescView().setText(item.getDescription());
-			
-//			GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-//					new int[]{0x4a8649, 0x68bc67});
-//			gd.setAlpha(255);
 			
 			/* set the rows color-tag */
 			if(item.getType().equals("DAGENS"))

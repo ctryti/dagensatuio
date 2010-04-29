@@ -4,11 +4,11 @@
 	<string name="app_name">Dagens@UiO</string>
 	
 	<string-array name="weekdays">
-		<item>Man</item>
-		<item>Tir</item>
-		<item>Ons</item>
-		<item>Tor</item>
-		<item>Fre</item>
+		<item>Mandag</item>
+		<item>Tirsdag</item>
+		<item>Onsdag</item>
+		<item>Torsdag</item>
+		<item>Fredag</item>
 	</string-array>
 	
 	<string-array name="months">

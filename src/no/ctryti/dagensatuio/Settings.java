@@ -7,6 +7,8 @@ import android.util.Log;
 
 public abstract class Settings {
 	
+	private static String[] places;
+	
 	private Settings() {} /* Prevent instantiation */
 	
 	public static final String TAG = "DagensAtUiO";
@@ -43,6 +45,17 @@ public abstract class Settings {
 			}
 			this.uri = tmp;
 			this.name = name;
+		}
+		
+		static public String[] getPlaces() {
+			if(places == null) {
+				places = new String[Place.values().length];
+				int i = 0;
+				for(Place p : Place.values()) {
+					places[i++] = p.getName();
+				}
+			}
+			return places;
 		}
 
 		public String getName() {
