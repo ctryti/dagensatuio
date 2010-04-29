@@ -11,11 +11,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -35,6 +37,8 @@ public class HomeActivity extends Activity {
 	private String months[], weekdays[];
 	private DatabaseAdapter mDbAdapter;
 	
+	private Context mCtx = this;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -44,7 +48,9 @@ public class HomeActivity extends Activity {
 		setContentView(R.layout.home_activity);
 		populateList("Frederikke kaf\u00e9");
 		ImageButton placesButton = (ImageButton) findViewById(R.id.right_button);
-		placesButton.setOnClickListener(new ButtonListener(this));
+		placesButton.setOnClickListener(new ListPlacesListener());
+		ImageButton refreshButton = (ImageButton) findViewById(R.id.left_button);
+		refreshButton.setOnClickListener(new RefreshListener());
 	}
 
 	private void populateList(String placeName) {
@@ -101,12 +107,41 @@ public class HomeActivity extends Activity {
 		return "Uke "+week+": "+(cal.get(Calendar.DAY_OF_MONTH)-4)+". - "+cal.get(Calendar.DAY_OF_MONTH)+". "+month;
 	}
 
-	class ButtonListener implements android.view.View.OnClickListener {
-		private Context mCtx;
+	class RefreshListener implements OnClickListener {
 
-		ButtonListener(Context ctx) {
-			mCtx = ctx;
+		@Override
+		public void onClick(View arg0) {
+			Intent i = new Intent();
+			i.setAction(Intent.ACTION_SEND);
+			i.setType("*/*");
+			i.putExtra(Intent.EXTRA_TEXT, "Herro!");
+			System.out.println("skldfjslkdfj");
+			mCtx.startActivity(Intent.createChooser(i, "Share"));
+			
 		}
+		
+	}
+	
+//	  Intent intent = new Intent();
+//	  631                 intent.setAction(Intent.ACTION_SEND);
+//	  632                 String mimeType = image.getMimeType();
+//	  633                 intent.setType(mimeType);
+//	  634                 intent.putExtra(Intent.EXTRA_STREAM, u);
+//	  635                 boolean isImage = ImageManager.isImage(image);
+//	  636                 try {
+//	  637                     activity.startActivity(Intent.createChooser(intent,
+//	  638                             activity.getText(isImage
+//	  639                             ? R.string.sendImage
+//	  640                             : R.string.sendVideo)));
+//	  641                 } catch (android.content.ActivityNotFoundException ex) {
+//	  642                     Toast.makeText(activity, isImage
+//	  643                             ? R.string.no_way_to_share_image
+//	  644                             : R.string.no_way_to_share_video,
+//	  645                             Toast.LENGTH_SHORT).show();
+//	  646                 }
+//	  647             }
+	
+	class ListPlacesListener implements OnClickListener {
 
 		@Override
 		public void onClick(View v) {
