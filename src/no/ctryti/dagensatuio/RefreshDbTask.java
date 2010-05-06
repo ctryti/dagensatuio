@@ -9,7 +9,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -19,8 +21,10 @@ public class RefreshDbTask extends AsyncTask<Void, Integer, Void>  {
 
 	private DatabaseAdapter mDbAdapter;
 	public boolean busy = false;
+	private Context mCtx;
 	
-	public RefreshDbTask(DatabaseAdapter dbAdapter) {
+	public RefreshDbTask(Context ctx, DatabaseAdapter dbAdapter) {
+		mCtx = ctx;
 		mDbAdapter = dbAdapter;
 	}
 	
@@ -28,6 +32,8 @@ public class RefreshDbTask extends AsyncTask<Void, Integer, Void>  {
 	protected void onPreExecute() {
 		busy = true;
 		mDbAdapter.open();
+		((Activity) mCtx).setProgressBarVisibility(true);
+		
 	}
 
 	@Override

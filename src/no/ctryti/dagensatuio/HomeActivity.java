@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
@@ -46,7 +47,11 @@ public class HomeActivity extends Activity {
 		mDbAdapter = new DatabaseAdapter(this); 
 		
 		setContentView(R.layout.home_activity);
+		
 		populateList("Frederikke kaf\u00e9");
+		
+		
+		
 		ImageButton placesButton = (ImageButton) findViewById(R.id.right_button);
 		placesButton.setOnClickListener(new ListPlacesListener());
 		ImageButton refreshButton = (ImageButton) findViewById(R.id.left_button);
@@ -65,11 +70,9 @@ public class HomeActivity extends Activity {
 			SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 			
 			TextView top_tv = (TextView)findViewById(R.id.home_top);
-			TextView bottom_tv = (TextView)findViewById(R.id.middle_label);
-			
-			ListView list = (ListView)findViewById(R.id.home_list);
-			
 			top_tv.setText(createPeriodString(items.get(0).getPeriod()));
+
+			TextView bottom_tv = (TextView)findViewById(R.id.middle_label);
 			bottom_tv.setText(items.get(0).getPlace());
 			
 			/* Split the items into their respective days, add them */
@@ -82,8 +85,8 @@ public class HomeActivity extends Activity {
 			}			
 			for(int i = 0; i < weekdays.length; i++)
 				adapter.addSection(weekdays[i], new DinnerItemAdapter(this, separatedItems.get(i)));
-			
-			System.out.println(list);
+
+			ListView list = (ListView)findViewById(R.id.home_list);
 			list.setAdapter(adapter);
 		}
 			 /*Grid of days */
@@ -113,33 +116,14 @@ public class HomeActivity extends Activity {
 		public void onClick(View arg0) {
 			Intent i = new Intent();
 			i.setAction(Intent.ACTION_SEND);
-			i.setType("*/*");
+			i.setType("text/plain");
 			i.putExtra(Intent.EXTRA_TEXT, "Herro!");
 			System.out.println("skldfjslkdfj");
-			mCtx.startActivity(Intent.createChooser(i, "Share"));
+			startActivity(Intent.createChooser(i, "Share"));
 			
 		}
 		
 	}
-	
-//	  Intent intent = new Intent();
-//	  631                 intent.setAction(Intent.ACTION_SEND);
-//	  632                 String mimeType = image.getMimeType();
-//	  633                 intent.setType(mimeType);
-//	  634                 intent.putExtra(Intent.EXTRA_STREAM, u);
-//	  635                 boolean isImage = ImageManager.isImage(image);
-//	  636                 try {
-//	  637                     activity.startActivity(Intent.createChooser(intent,
-//	  638                             activity.getText(isImage
-//	  639                             ? R.string.sendImage
-//	  640                             : R.string.sendVideo)));
-//	  641                 } catch (android.content.ActivityNotFoundException ex) {
-//	  642                     Toast.makeText(activity, isImage
-//	  643                             ? R.string.no_way_to_share_image
-//	  644                             : R.string.no_way_to_share_video,
-//	  645                             Toast.LENGTH_SHORT).show();
-//	  646                 }
-//	  647             }
 	
 	class ListPlacesListener implements OnClickListener {
 
@@ -176,9 +160,8 @@ public class HomeActivity extends Activity {
 		switch (item.getItemId()) {
 
 		case REFRESH_ID:
-			mRefreshDbTask = new RefreshDbTask(mDbAdapter);
+			mRefreshDbTask = new RefreshDbTask(this, mDbAdapter);
 			mRefreshDbTask.execute();
-			
 			break;
 		case CLEAR_DB_ID:
 			mDbAdapter.reCreateDatabase();
@@ -251,13 +234,13 @@ public class HomeActivity extends Activity {
 			return -1;
 		}
 
-		public boolean areAllItemsSelectable() {
-			return false;
-		}
+//		public boolean areAllItemsSelectable() {
+//			return false;
+//		}
 
 		public boolean isEnabled(int position) {
-			//return (getItemViewType(position) != TYPE_SECTION_HEADER);
-			return false;
+			return (getItemViewType(position) != TYPE_SECTION_HEADER);
+			//return false;
 		}
 
 		@Override
@@ -283,49 +266,6 @@ public class HomeActivity extends Activity {
 			return position;
 		}
 	}
-	protected class ImageAdapter extends BaseAdapter {
-		private Context mCtx;
-		private int mRowResID;
-		private List<String> mList;
-
-		public ImageAdapter(Context ctx, int rowResID, List<String> list){
-			this.mCtx = ctx;
-			this.mRowResID = rowResID;
-			this.mList = list;
-		}
-
-		@Override
-		public int getCount() {
-			return mList.size();
-		}
-
-		@Override
-		public Object getItem(int arg0) {
-			return mList.get(arg0);
-		}
-
-		@Override
-		public long getItemId(int arg0) {
-			return arg0;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View v;
-			String day = mList.get(position);
-			if(convertView==null){
-				v = View.inflate(mCtx, R.layout.days_item, null);
-				TextView txt = (TextView) v.findViewById(R.id.day_text);
-				txt.setText(day);
-				//b1.setOnTouchListener(new ButtonListener(mCtx, day));
-
-			} else {
-				v = convertView;
-			}
-			return v;
-		}
-
-	}
 
 	private class DinnerItemAdapter extends BaseAdapter {
 
@@ -340,10 +280,10 @@ public class HomeActivity extends Activity {
 		@Override public Object getItem(int position) { return mList.get(position); }
 		@Override public long getItemId(int position) { return position; }
 		
-		@Override
-		public boolean isEnabled(int position) {
-			return false;
-		}
+//		@Override
+//		public boolean isEnabled(int position) {
+//			return false;
+//		}
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {

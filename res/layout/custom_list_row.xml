@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" 
-	android:layout_height="wrap_content">
+	android:layout_height="wrap_content"
+	>
 
 	<ImageView android:id="@+id/dagens_color_tag"
 		android:layout_width="4dp"
@@ -22,6 +23,7 @@
 			android:id="@+id/type" style="@style/DishTypeTheme"
 			android:layout_width="fill_parent" 
 			android:layout_height="wrap_content"
+			android:textStyle="italic"
 			android:layout_toRightOf="@id/dagens_color_tag"
 			/>
 	
