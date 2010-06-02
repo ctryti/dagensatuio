@@ -50,7 +50,7 @@ public class DatabaseAdapter {
 	private static class DatabaseHelper extends SQLiteOpenHelper {
 		
 		private static final String TAG = "DatabaseAdapter$DatabaseHelper";
-		private static final int DATABASE_VERSION = 9;
+		private static final int DATABASE_VERSION = 12;
 
 		/* Create statements */
 		private static final String CREATE_TABLE_PLACES =

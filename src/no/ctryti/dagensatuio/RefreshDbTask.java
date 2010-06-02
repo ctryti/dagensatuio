@@ -32,8 +32,6 @@ public class RefreshDbTask extends AsyncTask<Void, Integer, Void>  {
 	protected void onPreExecute() {
 		busy = true;
 		mDbAdapter.open();
-		((Activity) mCtx).setProgressBarVisibility(true);
-		
 	}
 
 	@Override
@@ -62,6 +60,7 @@ public class RefreshDbTask extends AsyncTask<Void, Integer, Void>  {
 				response = client.execute(get);
 				entity = response.getEntity();
 				dinnerItems.clear();
+				Log.i(TAG, "Start parsing "+place.getName());
 				dinnerItems.addAll(SiOParser.parse(entity.getContent(), place.getName()));
 			} catch (ClientProtocolException e) {
 				Log.w(TAG, "ClientProtocolException: " + place.getName());

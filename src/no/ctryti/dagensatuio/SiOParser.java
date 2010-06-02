@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import android.content.Context;
+import android.util.Log;
 
 //import android.util.Log;
 
@@ -119,13 +120,14 @@ public abstract class SiOParser extends Context {
 			if (curToken.equals("Uke")) {
 				sc.next(); // skip week number
 				
-				//curToken = sc.next(); // should be NEW_LINE_TOKEN
-				curToken = sc.next(); // skip all NEW_LINE_TOKENS
-				while(curToken.equals(NEW_LINE_TOKEN))
-					curToken = sc.next();
+				/* read until '-' */
+				sc.useDelimiter("-");
+				sc.next();
+				sc.useDelimiter(" ");
+				lastDay = sc.next();
+				while(lastDay.equals(" ") || lastDay.equals("-"))
+					lastDay = sc.next();
 				
-				sc.next(); // skip '-'
-				lastDay = sc.next(); // get the end of the period
 				month = sc.next(); // get the month
 				while (sc.hasNext()) {
 					curToken = sc.next();
@@ -139,7 +141,10 @@ public abstract class SiOParser extends Context {
 			}
 		}
 		
-		lastDay = lastDay.replace(".", "");
+		lastDay = lastDay.replaceAll("\\.", "");
+		lastDay = lastDay.replaceAll(" ", "");
+		lastDay = lastDay.replaceAll("\\-", "");
+		
 		date.setMinimalDaysInFirstWeek(3); // European way of counting weeks.
 		date.set(date.get(Calendar.YEAR), date.get(calConstants.get(month.toLowerCase())), Integer.parseInt(lastDay));
 		period = date.get(Calendar.YEAR)+""+date.get(Calendar.WEEK_OF_YEAR);
@@ -230,6 +235,7 @@ public abstract class SiOParser extends Context {
 		sc.next();
 		sc.useDelimiter(NEW_LINE_TOKEN);
 		items[0].setDescription(cleanUpString(sc.next()));
+		Log.i(TAG, "Added " + items[0].getType() +": "+items[0].getDescription());
 		sc.useDelimiter(" ");
 
 		while (!curToken.equals("Mmm+"))
@@ -247,17 +253,21 @@ public abstract class SiOParser extends Context {
 		while(str.length() <= 1)
 			str = sc.next();
 		items[1].setDescription(cleanUpString(str));
+		Log.i(TAG, "Added " + items[1].getType() +": "+items[1].getDescription());
 		str = sc.next();
 		while(str.length() <= 1)
 			str = sc.next();
 		items[2].setDescription(cleanUpString(str));
+		Log.i(TAG, "Added " + items[2].getType() +": "+items[2].getDescription());
 		str = sc.next();
 		while(str.length() <= 1)
 			str = sc.next();
 		items[3].setDescription(cleanUpString(str));
+		Log.i(TAG, "Added " + items[3].getType() +": "+items[3].getDescription());
 		
 		sc.useDelimiter(" ");
 
+		/*
 		while (!sc.next().equals("Suppe"))
 			;
 		sc.next();
@@ -268,6 +278,9 @@ public abstract class SiOParser extends Context {
 		sc.useDelimiter(NEW_LINE_TOKEN);
 		items[5].setDescription(cleanUpString(sc.next().replaceAll(NEW_LINE_TOKEN, "")));
 		sc.useDelimiter(" ");
+		*/
+		items[4].setDescription(" ");
+		items[5].setDescription(" ");
 		return items;
 	}
 	

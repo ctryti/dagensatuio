@@ -1,8 +1,6 @@
 package no.ctryti.dagensatuio;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -31,7 +29,8 @@ public class HomeActivity extends Activity {
 
 	private static final int REFRESH_ID = 1;
 	private static final int CLEAR_DB_ID = 2;
-	private static final String TAG = "HomeActivity";
+	private static final String TAG = "HomeActivity";		
+
 	
 	private RefreshDbTask mRefreshDbTask;
 	
@@ -50,12 +49,10 @@ public class HomeActivity extends Activity {
 		
 		populateList("Frederikke kaf\u00e9");
 		
-		
-		
 		ImageButton placesButton = (ImageButton) findViewById(R.id.right_button);
 		placesButton.setOnClickListener(new ListPlacesListener());
 		ImageButton refreshButton = (ImageButton) findViewById(R.id.left_button);
-		refreshButton.setOnClickListener(new RefreshListener());
+		//refreshButton.setOnClickListener(new RefreshListener());
 	}
 
 	private void populateList(String placeName) {
@@ -89,45 +86,52 @@ public class HomeActivity extends Activity {
 			ListView list = (ListView)findViewById(R.id.home_list);
 			list.setAdapter(adapter);
 		}
-			 /*Grid of days */
-//			GridView days = (GridView) findViewById(R.id.days_list);
-//			days.setAdapter(new ImageAdapter(this, R.layout.days_item, Arrays.asList(weekdays)));
 	}
 	
 	private String createPeriodString(String period) {
 		
-		int year = Integer.parseInt(period.substring(0, 4));
-		int week = Integer.parseInt(period.substring(4,6));
-		String month;
-		Calendar cal = new GregorianCalendar(); 
-		cal.setMinimalDaysInFirstWeek(3);
-		
-		cal.set(Calendar.YEAR, year);
-		cal.set(Calendar.WEEK_OF_YEAR, week);
-		cal.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
-		month = months[cal.get(Calendar.MONTH)];
-		
-		return "Uke "+week+": "+(cal.get(Calendar.DAY_OF_MONTH)-4)+". - "+cal.get(Calendar.DAY_OF_MONTH)+". "+month;
+//		int year = Integer.parseInt(period.substring(0, 4));
+//		int week = Integer.parseInt(period.substring(4,6));
+//		String month;
+//		Calendar cal = new GregorianCalendar(); 
+//		cal.setMinimalDaysInFirstWeek(3);
+//		
+//		cal.set(Calendar.YEAR, year);
+//		cal.set(Calendar.WEEK_OF_YEAR, week);
+//		cal.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+//		month = months[cal.get(Calendar.MONTH)];
+//		
+//		return "Uke "+week+": "+(cal.get(Calendar.DAY_OF_MONTH)-4)+". - "+cal.get(Calendar.DAY_OF_MONTH)+". "+month;
+		return " ";
 	}
 
-	class RefreshListener implements OnClickListener {
+	class ShareListener implements OnLongClickListener {
 
-		@Override
-		public void onClick(View arg0) {
+		ViewHolder holder;
+		
+		ShareListener(ViewHolder holder) {
+			this.holder = holder;
+		}
+		
+		public boolean onLongClick(View v) {
+			
+			String text = "";
+			
+			text += "Bli med å spise [" + holder.getTypeView().getText() + "] "+holder.getDescView().getText() + "?";
+			
 			Intent i = new Intent();
 			i.setAction(Intent.ACTION_SEND);
 			i.setType("text/plain");
-			i.putExtra(Intent.EXTRA_TEXT, "Herro!");
-			System.out.println("skldfjslkdfj");
-			startActivity(Intent.createChooser(i, "Share"));
 			
+			
+			i.putExtra(Intent.EXTRA_TEXT, text);
+			startActivity(Intent.createChooser(i, "Share"));
+			return false;
 		}
-		
 	}
 	
 	class ListPlacesListener implements OnClickListener {
 
-		@Override
 		public void onClick(View v) {
 			final AlertDialog.Builder placesDialog = new AlertDialog.Builder(mCtx);
 			String[] places = Settings.Place.getPlaces();
@@ -135,7 +139,6 @@ public class HomeActivity extends Activity {
 			placesDialog.setTitle("Velg et sted");
 
 			placesDialog.setItems(places, new DialogInterface.OnClickListener() {
-				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					populateList(Settings.Place.getPlaces()[which]);
 				}
@@ -144,8 +147,6 @@ public class HomeActivity extends Activity {
 			al.show();
 		}
 	}
-
-
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -234,16 +235,11 @@ public class HomeActivity extends Activity {
 			return -1;
 		}
 
-//		public boolean areAllItemsSelectable() {
-//			return false;
-//		}
-
 		public boolean isEnabled(int position) {
 			return (getItemViewType(position) != TYPE_SECTION_HEADER);
 			//return false;
 		}
 
-		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			int sectionnum = 0;
 			for(Object section : this.sections.keySet()) {
@@ -261,7 +257,6 @@ public class HomeActivity extends Activity {
 			return null;
 		}
 
-		@Override
 		public long getItemId(int position) {
 			return position;
 		}
@@ -276,16 +271,10 @@ public class HomeActivity extends Activity {
 			mCtx = ctx;
 			mList = list;
 		}
-		@Override public int getCount() { return mList.size(); }
-		@Override public Object getItem(int position) { return mList.get(position); }
-		@Override public long getItemId(int position) { return position; }
+		public int getCount() { return mList.size(); }
+		public Object getItem(int position) { return mList.get(position); }
+		public long getItemId(int position) { return position; }
 		
-//		@Override
-//		public boolean isEnabled(int position) {
-//			return false;
-//		}
-		
-		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			DinnerItem item = mList.get(position);
 			View row = convertView; 
@@ -300,7 +289,8 @@ public class HomeActivity extends Activity {
 			}
 			holder.getTypeView().setText(item.getType());
 			holder.getDescView().setText(item.getDescription());
-			
+			holder.getBase().setOnLongClickListener(new ShareListener(holder));
+					
 			/* set the rows color-tag */
 			if(item.getType().equals("DAGENS"))
 				holder.getColorView().setImageResource(R.drawable.blue_color_tag);
@@ -312,8 +302,7 @@ public class HomeActivity extends Activity {
 				holder.getColorView().setImageResource(R.drawable.red_color_tag);
 			else if(item.getType().equals("SUPPE"))
 				holder.getColorView().setImageResource(R.drawable.purple_color_tag);
-			
-						
+
 			return row;
 		}
 	}

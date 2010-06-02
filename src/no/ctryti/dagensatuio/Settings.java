@@ -14,20 +14,13 @@ public abstract class Settings {
 	public static final String TAG = "DagensAtUiO";
 	
 	public enum Place {
-		/*
-		Need to write a different parser for these. They have DAGENS and VEGETAR.
-		OLE ("Kafe Ole","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/kafe+ole"),
-		MHS ("Musikkhøgskolens kafe","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/musikkhogskolens+kafe+ny"),
-		*/
 		AHO        ("AHO-kafeen",                  "http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/aho"), 
 		FORSKNINGSV("Forskningsveien",             "http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/forskningsveien"), 
 		FREDERIKKE ("Frederikke kaf\u00e9",             "http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/frederikke+kafe"), 
 		IFI        ("Informatikkafeen",            "http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/informatikkafeen+ny"), 
 		HELGA      ("Kafe Helga",                  "http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/kafe+helga"), 
 		NIH        ("Norges idrettsh\u00f8gskoles kafe","http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/nih"),
-		NOVA       ("Kafe Nova",                   "http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/kafe+nova"), 
 		NVH        ("Norges veterin\u00e6rh\u00f8gskole",    "http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/veterinerhogskolen"),
-		SEILDUKEN  ("Kafe Seilduken",              "http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/kafe+seilduken"), 
 		SV         ("SV Kafeen",                   "http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/sv+kafeen+ny"),
 		ODONTOLOGI ("Odontologikafeen",            "http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/odontologikafeen"), 
 		PREKLINISK ("Preklinisk kafe",             "http://www.sio.no/wps/wcm/connect/migration/sio/mat+og+drikke/dagens+middag/preklinisk+kafe"), 
